@@ -1,1 +1,14 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>hackrf - 标签 - 纯真's Blog</title><link>https://droidkali.github.io/hugo-blog/tags/hackrf/</link><description>hackrf - 标签 - 纯真's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>droidkali@qq.com (记忆里的纯真)</managingEditor><webMaster>droidkali@qq.com (记忆里的纯真)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 07 May 2019 21:21:31 +0000</lastBuildDate><atom:link href="https://droidkali.github.io/hugo-blog/tags/hackrf/" rel="self" type="application/rss+xml"/><item><title>浅谈 GSM 网络的安全性 实战截取用户身份信息</title><link>https://droidkali.github.io/hugo-blog/2019/05/07/gsm-sniffing.html/</link><pubDate>Tue, 07 May 2019 21:21:31 +0000</pubDate><author><name>记忆里的纯真</name><uri>https://droidkali.github.io</uri></author><guid>https://droidkali.github.io/hugo-blog/2019/05/07/gsm-sniffing.html/</guid><description>本文介绍了 GSM 网络安全性的探究并结合实际的例子证明其危害性。</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>hackrf - 标签 - 纯真&#39;s Blog</title>
+        <link>https://droidkali.github.io/tags/hackrf/</link>
+        <description>hackrf - 标签 - 纯真&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>droidkali@qq.com (记忆里的纯真)</managingEditor>
+            <webMaster>droidkali@qq.com (记忆里的纯真)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 07 May 2019 21:21:31 &#43;0000</lastBuildDate><atom:link href="https://droidkali.github.io/tags/hackrf/" rel="self" type="application/rss+xml" /><item>
+    <title>浅谈 GSM 网络的安全性 实战截取用户身份信息</title>
+    <link>https://droidkali.github.io/2019/05/07/gsm-sniffing.html/</link>
+    <pubDate>Tue, 07 May 2019 21:21:31 &#43;0000</pubDate><author>
+                        <name>记忆里的纯真</name><uri>https://droidkali.github.io</uri></author><guid>https://droidkali.github.io/2019/05/07/gsm-sniffing.html/</guid>
+    <description><![CDATA[本文介绍了 GSM 网络安全性的探究并结合实际的例子证明其危害性。]]></description>
+</item></channel>
+</rss>

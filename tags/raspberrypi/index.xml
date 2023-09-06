@@ -1,1 +1,14 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>RaspberryPi - 标签 - 纯真's Blog</title><link>https://droidkali.github.io/hugo-blog/tags/raspberrypi/</link><description>RaspberryPi - 标签 - 纯真's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>droidkali@qq.com (记忆里的纯真)</managingEditor><webMaster>droidkali@qq.com (记忆里的纯真)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 23 Mar 2019 19:34:58 +0000</lastBuildDate><atom:link href="https://droidkali.github.io/hugo-blog/tags/raspberrypi/" rel="self" type="application/rss+xml"/><item><title>树莓派3B-Kali-Linux-WiFi配置绕坑指南</title><link>https://droidkali.github.io/hugo-blog/2019/03/23/raspberrypi3-kali-wifi-setup.html/</link><pubDate>Sat, 23 Mar 2019 19:34:58 +0000</pubDate><author><name>记忆里的纯真</name><uri>https://droidkali.github.io</uri></author><guid>https://droidkali.github.io/hugo-blog/2019/03/23/raspberrypi3-kali-wifi-setup.html/</guid><description>本文主要介绍树莓派安装Kali Linux之后配置WiFi的过程。</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>RaspberryPi - 标签 - 纯真&#39;s Blog</title>
+        <link>https://droidkali.github.io/tags/raspberrypi/</link>
+        <description>RaspberryPi - 标签 - 纯真&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>droidkali@qq.com (记忆里的纯真)</managingEditor>
+            <webMaster>droidkali@qq.com (记忆里的纯真)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 23 Mar 2019 19:34:58 &#43;0000</lastBuildDate><atom:link href="https://droidkali.github.io/tags/raspberrypi/" rel="self" type="application/rss+xml" /><item>
+    <title>树莓派3B-Kali-Linux-WiFi配置绕坑指南</title>
+    <link>https://droidkali.github.io/2019/03/23/raspberrypi3-kali-wifi-setup.html/</link>
+    <pubDate>Sat, 23 Mar 2019 19:34:58 &#43;0000</pubDate><author>
+                        <name>记忆里的纯真</name><uri>https://droidkali.github.io</uri></author><guid>https://droidkali.github.io/2019/03/23/raspberrypi3-kali-wifi-setup.html/</guid>
+    <description><![CDATA[本文主要介绍树莓派安装Kali Linux之后配置WiFi的过程。]]></description>
+</item></channel>
+</rss>

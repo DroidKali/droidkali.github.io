@@ -1,467 +1,1356 @@
-<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><title>Kali Linux NetHunter内核编译指南 - 纯真's Blog</title><meta name=Description content="本文主要介绍Kali Linux NetHunter内核的编译适配过程。"><meta property="og:title" content="Kali Linux NetHunter内核编译指南"><meta property="og:description" content="本文主要介绍Kali Linux NetHunter内核的编译适配过程。"><meta property="og:type" content="article"><meta property="og:url" content="https://droidkali.github.io/hugo-blog/2021/09/12/build-nethunter-kernel.html/"><meta property="og:image" content="https://droidkali.github.io/images/avatar.webp"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-09-12T22:35:39+00:00"><meta property="article:modified_time" content="2021-09-12T22:35:39+00:00"><meta property="og:site_name" content="纯真's Blog"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://droidkali.github.io/images/avatar.webp"><meta name=twitter:title content="Kali Linux NetHunter内核编译指南"><meta name=twitter:description content="本文主要介绍Kali Linux NetHunter内核的编译适配过程。"><meta name=application-name content="纯真's Blog"><meta name=apple-mobile-web-app-title content="纯真's Blog"><meta name=theme-color content="#f8f8f8"><meta name=msapplication-TileColor content="#da532c"><link rel=icon href=https://droidkali.github.io/images/head.jpg><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=canonical href=https://droidkali.github.io/hugo-blog/2021/09/12/build-nethunter-kernel.html/><link rel=prev href=https://droidkali.github.io/hugo-blog/2019/05/07/gsm-sniffing.html/><link rel=next href=https://droidkali.github.io/hugo-blog/2021/12/30/log4j2-rce.html/><link rel=stylesheet href=/hugo-blog/css/main.css><link rel=stylesheet href=https://fastly.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/hugo-blog/css/color.css><link rel=stylesheet href=/hugo-blog/css/style.min.css><link rel=preload as=style onload='this.onload=null,this.rel="stylesheet"' href=https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css><noscript><link rel=stylesheet href=https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css></noscript><link rel=preload as=style onload='this.onload=null,this.rel="stylesheet"' href=https://fastly.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css><noscript><link rel=stylesheet href=https://fastly.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css></noscript><meta name=google-site-verification content="MQ8DNu27ayX6B_4ObiEDK09vGr1fdy7kOAnbd09hJk4"><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Kali Linux NetHunter内核编译指南","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/droidkali.github.io\/hugo-blog\/2021\/09\/12\/build-nethunter-kernel.html\/"},"image":["https:\/\/droidkali.github.io\/images\/Apple-Devices-Preview.png"],"genre":"posts","keywords":"NetHunter, Android, Kernel, 内核编译","wordcount":3495,"url":"https:\/\/droidkali.github.io\/hugo-blog\/2021\/09\/12\/build-nethunter-kernel.html\/","datePublished":"2021-09-12T22:35:39+00:00","dateModified":"2021-09-12T22:35:39+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"记忆里的纯真","logo":{"@type":"ImageObject","url":"https:\/\/droidkali.github.io\/hugo-blog\/images\/avatar.webp","width":528,"height":560}},"authors":[{"@type":"Person","name":"记忆里的纯真"}],"description":"本文主要介绍Kali Linux NetHunter内核的编译适配过程。"}</script><script src=//instant.page/5.2.0 defer type=module integrity=sha384-jnZyxPjiipYXnSU0ygqeac2q7CVYMbh84q0uHVRRxEtvFPiQYbXWUorga2aqZJ0z></script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>function setTheme(e){document.body.setAttribute("theme",e),document.documentElement.style.setProperty("color-scheme",e==="light"?"light":"dark"),window.theme=e,window.isDark=window.theme!=="light"}function saveTheme(e){window.localStorage&&localStorage.setItem("theme",e)}function getMeta(e){const t=document.getElementsByTagName("meta");for(let n=0;n<t.length;n++)if(t[n].getAttribute("name")===e)return t[n];return""}if(window.localStorage&&localStorage.getItem("theme")){let e=localStorage.getItem("theme");e==="light"||e==="dark"||e==="black"?setTheme(e):setTheme(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}else"auto"==="light"||"auto"==="dark"||"auto"==="black"?(setTheme("auto"),saveTheme("auto")):(saveTheme("auto"),setTheme(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"));let metaColors={light:"#f8f8f8",dark:"#252627",black:"#000000"};getMeta("theme-color").content=metaColors[document.body.getAttribute("theme")],window.switchThemeEventSet=new Set</script><div id=back-to-top></div><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/hugo-blog/ title="纯真's Blog"><img class=logo loading=lazy src=https://droidkali.github.io/images/head.jpg srcset="https://droidkali.github.io/images/head.jpg, https://droidkali.github.io/images/head.jpg 1.5x, https://droidkali.github.io/images/head.jpg 2x" sizes=auto alt=https://droidkali.github.io/images/head.jpg title=https://droidkali.github.io/images/head.jpg><span id=desktop-header-typeit class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/hugo-blog/about/><i class="fas fa-user"></i> 关于 </a><a class=menu-item href=/hugo-blog/tags/><i class="fas fa-tag"></i> 标签 </a><a class=menu-item href=/hugo-blog/categories/><i class="fas fa-folder-open"></i> 分类 </a><a class=menu-item href=/hugo-blog/posts/><i class="fas fa-archive"></i> 归档 </a><a class=menu-item href=/hugo-blog/friends/><i class="fas fa-user-friends"></i> 友链 </a><a class=menu-item href=/hugo-blog/notes/><i class="fas fa-book"></i> 备忘录 </a><a class=menu-item href=/hugo-blog/software/><i class="fab fa-windows"></i> 常用软件 </a><a class=menu-item href=https://github.com/DroidKali title=GitHub rel="noopener noreferrer" target=_blank><i class='fab fa-github fa-fw'></i> GitHub </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
-<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a>
-<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
-</span><a href=javascript:void(0); class="menu-item theme-select" title=切换主题><i class="fas fa-adjust fa-fw"></i>
-<select class=color-theme-select id=theme-select-desktop title=切换主题><option value=light>浅色</option><option value=dark>深色</option><option value=black>黑色</option><option value=auto>跟随系统</option></select></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/hugo-blog/ title="纯真's Blog"><img class=logo loading=lazy src=https://droidkali.github.io/images/head.jpg srcset="https://droidkali.github.io/images/head.jpg, https://droidkali.github.io/images/head.jpg 1.5x, https://droidkali.github.io/images/head.jpg 2x" sizes=auto alt=https://droidkali.github.io/images/head.jpg title=https://droidkali.github.io/images/head.jpg><span id=mobile-header-typeit class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a>
-<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/hugo-blog/about/ title><i class="fas fa-user"></i>关于</a><a class=menu-item href=/hugo-blog/tags/ title><i class="fas fa-tag"></i>标签</a><a class=menu-item href=/hugo-blog/categories/ title><i class="fas fa-folder-open"></i>分类</a><a class=menu-item href=/hugo-blog/posts/ title><i class="fas fa-archive"></i>归档</a><a class=menu-item href=/hugo-blog/friends/ title><i class="fas fa-user-friends"></i>友链</a><a class=menu-item href=/hugo-blog/notes/ title><i class="fas fa-book"></i>备忘录</a><a class=menu-item href=/hugo-blog/software/ title><i class="fab fa-windows"></i>常用软件</a><a class=menu-item href=https://github.com/DroidKali title=GitHub rel="noopener noreferrer" target=_blank><i class='fab fa-github fa-fw'></i>GitHub</a><a href=javascript:void(0); class="menu-item theme-select" title=切换主题>
-<i class="fas fa-adjust fa-fw"></i>
-<select class=color-theme-select id=theme-select-mobile title=切换主题><option value=light>浅色</option><option value=dark>深色</option><option value=black>黑色</option><option value=auto>跟随系统</option></select></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto><nav id=TableOfContents><ul><li><a href=#0x00-前言>0x00 前言</a><ul><li><ul><li><a href=#对读者的要求>对读者的要求</a></li><li><a href=#开始前的准备>开始前的准备</a></li><li><a href=#内核源码的选择>内核源码的选择</a></li><li><a href=#交叉编译工具链的选择>交叉编译工具链的选择</a></li><li><a href=#如何查找自己手机的内核源码>如何查找自己手机的内核源码</a></li></ul></li></ul></li><li><a href=#0x01-环境准备>0x01 环境准备</a></li><li><a href=#0x02-系统设置>0x02 系统设置</a><ul><li><ul><li><a href=#设置更新源>设置更新源</a></li><li><a href=#更新系统>更新系统</a></li></ul></li></ul></li><li><a href=#0x03-安装编译依赖>0x03 安装编译依赖</a></li><li><a href=#0x04-下载交叉编译工具链>0x04 下载交叉编译工具链</a></li><li><a href=#0x05-下载内核源码>0x05 下载内核源码</a></li><li><a href=#0x06-编译内核>0x06 编译内核</a><ul><li><ul><li><a href=#设置环境变量>设置环境变量</a></li><li><a href=#打入补丁>打入补丁</a></li><li><a href=#生成defconfig>生成defconfig</a></li><li><a href=#图形化配置内核选项>图形化配置内核选项</a></li><li><a href=#保存配置>保存配置</a></li><li><a href=#编译内核>编译内核</a></li><li><a href=#编译内核模块>编译内核模块</a></li></ul></li></ul></li><li><a href=#0x07-构建nethunter-kernel-installer内核包>0x07 构建NetHunter-Kernel-Installer内核包</a><ul><li><ul><li><a href=#下载kali官方构建脚本>下载Kali官方构建脚本</a></li><li><a href=#编辑机型列表>编辑机型列表</a></li><li><a href=#创建机型对应的文件夹>创建机型对应的文件夹</a></li><li><a href=#复制所需要的文件>复制所需要的文件</a></li><li><a href=#生成nethunter-kernnel-installer安装包>生成NetHunter-Kernnel-Installer安装包</a></li></ul></li></ul></li><li><a href=#0x08-下载adb-fastboot工具包>0x08 下载ADB-FASTBOOT工具包</a></li><li><a href=#0x09-刷入内核安装包>0x09 刷入内核安装包</a><ul><li><ul><li><a href=#重启到recovery模式>重启到Recovery模式</a></li><li><a href=#刷入内核刷机包>刷入内核刷机包</a></li></ul></li></ul></li><li><a href=#0x10-相关链接>0x10 相关链接</a></li></ul></nav></div></div><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC","true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kali Linux NetHunter内核编译指南</h1><div class=post-meta><div class=post-meta-line><span class=post-author><span class=author><span class="author fas fa-user-circle fa-fw"></span><span class=screen-reader-text> </span><a href=https://droidkali.github.io/hugo-blog/authors/%E8%AE%B0%E5%BF%86%E9%87%8C%E7%9A%84%E7%BA%AF%E7%9C%9F>记忆里的纯真</a></span>
-</span>&nbsp;<span class=post-category>收录于 </span>&nbsp;<span class=post-category>类别 <a href=/hugo-blog/categories/kali/><i class="far fa-folder fa-fw"></i>kali</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-09-12>2021-09-12</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime=2021-09-12>2021-09-12</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3495 字&nbsp;<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;<span id=/hugo-blog/2021/09/12/build-nethunter-kernel.html/ class=leancloud_visitors data-flag-title="Kali Linux NetHunter内核编译指南">
-<i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
-</span>&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
-<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#0x00-前言>0x00 前言</a><ul><li><ul><li><a href=#对读者的要求>对读者的要求</a></li><li><a href=#开始前的准备>开始前的准备</a></li><li><a href=#内核源码的选择>内核源码的选择</a></li><li><a href=#交叉编译工具链的选择>交叉编译工具链的选择</a></li><li><a href=#如何查找自己手机的内核源码>如何查找自己手机的内核源码</a></li></ul></li></ul></li><li><a href=#0x01-环境准备>0x01 环境准备</a></li><li><a href=#0x02-系统设置>0x02 系统设置</a><ul><li><ul><li><a href=#设置更新源>设置更新源</a></li><li><a href=#更新系统>更新系统</a></li></ul></li></ul></li><li><a href=#0x03-安装编译依赖>0x03 安装编译依赖</a></li><li><a href=#0x04-下载交叉编译工具链>0x04 下载交叉编译工具链</a></li><li><a href=#0x05-下载内核源码>0x05 下载内核源码</a></li><li><a href=#0x06-编译内核>0x06 编译内核</a><ul><li><ul><li><a href=#设置环境变量>设置环境变量</a></li><li><a href=#打入补丁>打入补丁</a></li><li><a href=#生成defconfig>生成defconfig</a></li><li><a href=#图形化配置内核选项>图形化配置内核选项</a></li><li><a href=#保存配置>保存配置</a></li><li><a href=#编译内核>编译内核</a></li><li><a href=#编译内核模块>编译内核模块</a></li></ul></li></ul></li><li><a href=#0x07-构建nethunter-kernel-installer内核包>0x07 构建NetHunter-Kernel-Installer内核包</a><ul><li><ul><li><a href=#下载kali官方构建脚本>下载Kali官方构建脚本</a></li><li><a href=#编辑机型列表>编辑机型列表</a></li><li><a href=#创建机型对应的文件夹>创建机型对应的文件夹</a></li><li><a href=#复制所需要的文件>复制所需要的文件</a></li><li><a href=#生成nethunter-kernnel-installer安装包>生成NetHunter-Kernnel-Installer安装包</a></li></ul></li></ul></li><li><a href=#0x08-下载adb-fastboot工具包>0x08 下载ADB-FASTBOOT工具包</a></li><li><a href=#0x09-刷入内核安装包>0x09 刷入内核安装包</a><ul><li><ul><li><a href=#重启到recovery模式>重启到Recovery模式</a></li><li><a href=#刷入内核刷机包>刷入内核刷机包</a></li></ul></li></ul></li><li><a href=#0x10-相关链接>0x10 相关链接</a></li></ul></nav></div></div><div class=content id=content><h2 id=0x00-前言 class=headerLink><a href=#0x00-%e5%89%8d%e8%a8%80 class=header-mark></a>1 0x00 前言</h2><p>近年来随着各种HVV活动的兴起，各种新的概念层出不穷。其中就有近源渗透这个概念。<br>黑客行走江湖，哪儿能没有些趁手的兵器装备呢？ 相信很多人都曾梦想过拥有一台黑客专属手机，走到哪儿黑到哪儿。那么现实中这样的手机存在吗？答案是肯定的！NetHunter就能满足你所有的需求！<br><a href=https://www.kali.org/docs/nethunter/ target=_blank rel="noopener noreferrer">Kali Linux NetHunter</a>是由<em>Offensive-Security</em>团队打造的基于Android平台的渗透测试环境。<br>通过使用<em>Kali Linux NetHunter</em>我们可以使用诸如外接无线网卡破解WiFi，模拟BadUSB设备进行HID攻击，外接USB蓝牙适配器进行蓝牙攻击&mldr;&mldr;等各种近源渗透活动。<br>在<em>Kali Linux NetHunter</em><a href=https://www.kali.org/docs/nethunter/ target=_blank rel="noopener noreferrer">官网</a>我们可以查阅官方支持的设备型号列表。</p><h4 id=对读者的要求 class=headerLink><a href=#%e5%af%b9%e8%af%bb%e8%80%85%e7%9a%84%e8%a6%81%e6%b1%82 class=header-mark></a>1.0.1 对读者的要求</h4><p>如果你会玩安卓刷机且手机型号恰好被官方支持，那么直接按照<a href=https://www.kali.org/docs/nethunter/installing-nethunter target=_blank rel="noopener noreferrer">官方教程</a>一步步来就好。<br>如果很不幸你的手机不被官方所支持但你会玩Linux且懂一些安卓开发以及C语言方面的知识想给自己的手机适配NetHunter，那么本篇教程就带你如何给一台不被官方支持的手机适配Kali NetHunter。</p><h4 id=开始前的准备 class=headerLink><a href=#%e5%bc%80%e5%a7%8b%e5%89%8d%e7%9a%84%e5%87%86%e5%a4%87 class=header-mark></a>1.0.2 开始前的准备</h4><p>· 一台能解锁BootLoader且内核源码开源的安卓手机<br>· 一台高性能x86_64 PC</p><h4 id=内核源码的选择 class=headerLink><a href=#%e5%86%85%e6%a0%b8%e6%ba%90%e7%a0%81%e7%9a%84%e9%80%89%e6%8b%a9 class=header-mark></a>1.0.3 内核源码的选择</h4><p>一般来说，手机厂商开源的内核源码代码质量参差不齐（一言难尽），如果我们要选择自己适配NetHunter的话最好选择知名第三方开发者Fork的源码进行编译。<br>比较知名的有：
-· <a href=https://github.com/LineageOS/ target=_blank rel="noopener noreferrer">LineageOS</a><br>· <a href=https://github.com/PixelExperience-Devices/ target=_blank rel="noopener noreferrer">PixelExperience</a><br>· <a href=https://github.com/crdroidandroid/ target=_blank rel="noopener noreferrer">crDroid</a><br>· <a href=https://github.com/mokee/ target=_blank rel="noopener noreferrer">MoKee</a><br>· <a href=https://github.com/Havoc-OS/ target=_blank rel="noopener noreferrer">Havoc-OS</a><br>· <a href=https://github.com/arter97/ target=_blank rel="noopener noreferrer">Arter97</a><br>&mldr;等，这里不再一一列举。</p><h4 id=交叉编译工具链的选择 class=headerLink><a href=#%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91%e5%b7%a5%e5%85%b7%e9%93%be%e7%9a%84%e9%80%89%e6%8b%a9 class=header-mark></a>1.0.4 交叉编译工具链的选择</h4><p>对于较老版本的内核（3.18.x以下）的一般是使用Google GCC4.9<br>对于较新版本的内核（4.4.x以上）的建议使用Clang来编译<br>对于Google gcc编译器，使用以下命令下载<br>64位：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>git clone https://mirrors.bfsu.edu.cn/git/AOSP/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-10.0.0_r32 --depth<span class=o>=</span><span class=m>1</span>
-</span></span></code></pre></td></tr></table></div></div><p>32位：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>git clone https://mirrors.bfsu.edu.cn/git/AOSP/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 -b android-10.0.0_r32 --depth<span class=o>=</span><span class=m>1</span>
-</span></span></code></pre></td></tr></table></div></div><p>对于Clang编译器，使用以下命令下载<br>Google官方Clang：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>git clone https://mirrors.bfsu.edu.cn/git/AOSP/platform/prebuilts/clang/host/linux-x86 --depth<span class=o>=</span><span class=m>1</span>
-</span></span></code></pre></td></tr></table></div></div><p>Proton-clang:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>git clone https://github.com/kdrag0n/proton-clang.git --depth<span class=o>=</span><span class=m>1</span>
-</span></span></code></pre></td></tr></table></div></div><h4 id=如何查找自己手机的内核源码 class=headerLink><a href=#%e5%a6%82%e4%bd%95%e6%9f%a5%e6%89%be%e8%87%aa%e5%b7%b1%e6%89%8b%e6%9c%ba%e7%9a%84%e5%86%85%e6%a0%b8%e6%ba%90%e7%a0%81 class=header-mark></a>1.0.5 如何查找自己手机的内核源码</h4><p>对于已经开源内核源码的手机来说，一般只需要在GitHub上搜索关键字就能找到适合你的内核源码<br>一般搜索的关键字为<code>android_kernel_&lt;设备厂商名>_&lt;设备CPU代号名></code><br>或者<code>kernel_&lt;设备厂商名>_&lt;设备CPU代号></code><br>又或者<code>kernel_&lt;设备厂商名>_&lt;设备代号></code>
-举个例子来说，我的设备是<em>小米Redmi 4X</em>，设备厂商是<em>xiaomi</em>，CPU代号是<em>MSM8937</em>，设备代号是<em>santoni</em>那么就可以在GitHub上搜索关键字<code>android_kernel_xiaomi_msm8937</code>或者<code>kernel_xiaomi_santoni</code>或者<code>kernel_xiaomi_msm8937</code>来找对应设备的内核源码。<br>这里还要注意的一点是所选取的内核源码尽量要与当前手机所使用的ROM Android版本对应，比如如果手机所使用的ROM是LineageOS的那就去找LineageOS所对应的内核源码，且分支也要一一对应。<br>当然你也可以选择在<a href=https://www.xda-developers.com/ target=_blank rel="noopener noreferrer">XDA论坛</a>寻找其他第三方优秀作者提供的内核源码。</p><h2 id=0x01-环境准备 class=headerLink><a href=#0x01-%e7%8e%af%e5%a2%83%e5%87%86%e5%a4%87 class=header-mark></a>2 0x01 环境准备</h2><p>我这里使用VMware虚拟机安装Kali Linux系统来进行演示</p><p><em>Kali Linux</em>最新镜像 <a href=https://mirrors.bfsu.edu.cn/kali-images/kali-weekly/ target=_blank rel="noopener noreferrer">下载链接</a></p><p><em>VMware Workstation Pro</em>虚拟机 <a href=https://www.vmware.com/cn/products/workstation-pro/workstation-pro-evaluation.html target=_blank rel="noopener noreferrer">下载链接</a></p><p><em>ADB-FASTBOOT工具</em> for Linux <a href=https://dl.google.com/android/repository/platform-tools-latest-linux.zip target=_blank rel="noopener noreferrer">下载链接</a></p><h2 id=0x02-系统设置 class=headerLink><a href=#0x02-%e7%b3%bb%e7%bb%9f%e8%ae%be%e7%bd%ae class=header-mark></a>3 0x02 系统设置</h2><h4 id=设置更新源 class=headerLink><a href=#%e8%ae%be%e7%bd%ae%e6%9b%b4%e6%96%b0%e6%ba%90 class=header-mark></a>3.0.6 设置更新源</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=nb>echo</span> <span class=s2>&#34;deb https://mirrors.bfsu.edu.cn/kali kali-rolling main non-free contrib&#34;</span> &gt; /etc/apt/sources.list
-</span></span></code></pre></td></tr></table></div></div><h4 id=更新系统 class=headerLink><a href=#%e6%9b%b4%e6%96%b0%e7%b3%bb%e7%bb%9f class=header-mark></a>3.0.7 更新系统</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>apt update <span class=o>&amp;&amp;</span> apt upgrade -y <span class=o>&amp;&amp;</span> apt full-upgrade -y <span class=o>&amp;&amp;</span> reboot
-</span></span></code></pre></td></tr></table></div></div><h2 id=0x03-安装编译依赖 class=headerLink><a href=#0x03-%e5%ae%89%e8%a3%85%e7%bc%96%e8%af%91%e4%be%9d%e8%b5%96 class=header-mark></a>4 0x03 安装编译依赖</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span><span class=lnt>7
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>apt install -y curl wget vim git ccache automake flex lzop bison gperf <span class=se>\
-</span></span></span><span class=line><span class=cl><span class=se></span>build-essential zip zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev <span class=se>\
-</span></span></span><span class=line><span class=cl><span class=se></span>libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev <span class=se>\
-</span></span></span><span class=line><span class=cl><span class=se></span>liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl <span class=se>\
-</span></span></span><span class=line><span class=cl><span class=se></span>policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc <span class=se>\
-</span></span></span><span class=line><span class=cl><span class=se></span>libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev <span class=se>\
-</span></span></span><span class=line><span class=cl><span class=se></span>libgl1-mesa-dev xsltproc unzip device-tree-compiler kmod python3 python3-pip
-</span></span></code></pre></td></tr></table></div></div><h2 id=0x04-下载交叉编译工具链 class=headerLink><a href=#0x04-%e4%b8%8b%e8%bd%bd%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91%e5%b7%a5%e5%85%b7%e9%93%be class=header-mark></a>5 0x04 下载交叉编译工具链</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>git clone https://github.com/kdrag0n/proton-clang.git /root/proton-clang --depth<span class=o>=</span><span class=m>1</span>
-</span></span></code></pre></td></tr></table></div></div><h2 id=0x05-下载内核源码 class=headerLink><a href=#0x05-%e4%b8%8b%e8%bd%bd%e5%86%85%e6%a0%b8%e6%ba%90%e7%a0%81 class=header-mark></a>6 0x05 下载内核源码</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>git clone https://github.com/crdroidandroid/android_kernel_xiaomi_msm8937.git
-</span></span><span class=line><span class=cl><span class=nb>cd</span> android_kernel_xiaomi_msm8937
-</span></span></code></pre></td></tr></table></div></div><h2 id=0x06-编译内核 class=headerLink><a href=#0x06-%e7%bc%96%e8%af%91%e5%86%85%e6%a0%b8 class=header-mark></a>7 0x06 编译内核</h2><h4 id=设置环境变量 class=headerLink><a href=#%e8%ae%be%e7%bd%ae%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f class=header-mark></a>7.0.8 设置环境变量</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>export ARCH=arm64
-</span></span><span class=line><span class=cl>export SUBARCH=arm64
-</span></span><span class=line><span class=cl>export KBUILD_BUILD_HOST=kali
-</span></span><span class=line><span class=cl>export KBUILD_BUILD_USER=root
-</span></span><span class=line><span class=cl>export LOCALVERSION=-NetHunter
-</span></span><span class=line><span class=cl>export PATH=&#34;/root/proton-clang/bin:$PATH&#34;
-</span></span><span class=line><span class=cl>mkdir out
-</span></span><span class=line><span class=cl>args=&#34;-j$(nproc --all) \
-</span></span><span class=line><span class=cl>ARCH=arm64 \
-</span></span><span class=line><span class=cl>SUBARCH=arm64 \
-</span></span><span class=line><span class=cl>O=out \
-</span></span><span class=line><span class=cl>CC=clang \
-</span></span><span class=line><span class=cl>CROSS_COMPILE=aarch64-linux-gnu- \
-</span></span><span class=line><span class=cl>CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
-</span></span><span class=line><span class=cl>CLANG_TRIPLE=aarch64-linux-gnu- \
-</span></span><span class=line><span class=cl>AR=llvm-ar \
-</span></span><span class=line><span class=cl>NM=llvm-nm \
-</span></span><span class=line><span class=cl>OBJCOPY=llvm-objcopy \
-</span></span><span class=line><span class=cl>OBJDUMP=llvm-objdump \
-</span></span><span class=line><span class=cl>STRIP=llvm-strip &#34;
-</span></span></code></pre></td></tr></table></div></div><h4 id=打入补丁 class=headerLink><a href=#%e6%89%93%e5%85%a5%e8%a1%a5%e4%b8%81 class=header-mark></a>7.0.9 打入补丁</h4><p>这里根据你的内核版本选择对应内核版本的补丁(patches)<br>我这里内核是4.9所以选择4.9内核的补丁</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>git clone https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-kernel.git
-</span></span><span class=line><span class=cl>patch -p1 &lt; kali-nethunter-kernel/patches/4.09/add-wifi-injection-4.14.patch
-</span></span><span class=line><span class=cl>patch -p1 &lt; kali-nethunter-kernel/patches/4.09/fix-ath9k-naming-conflict.patch
-</span></span></code></pre></td></tr></table></div></div><h4 id=生成defconfig class=headerLink><a href=#%e7%94%9f%e6%88%90defconfig class=header-mark></a>7.0.10 生成defconfig</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>make <span class=si>${</span><span class=nv>args</span><span class=si>}</span> mrproper
-</span></span><span class=line><span class=cl>make <span class=si>${</span><span class=nv>args</span><span class=si>}</span> santoni_treble_defconfig
-</span></span></code></pre></td></tr></table></div></div><h4 id=图形化配置内核选项 class=headerLink><a href=#%e5%9b%be%e5%bd%a2%e5%8c%96%e9%85%8d%e7%bd%ae%e5%86%85%e6%a0%b8%e9%80%89%e9%a1%b9 class=header-mark></a>7.0.11 图形化配置内核选项</h4><p>以下内容不同版本内核可能会有所不同，以实际情况为准！</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>make <span class=si>${</span><span class=nv>args</span><span class=si>}</span> menuconfig
-</span></span></code></pre></td></tr></table></div></div><p><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/menuconfig.png title=menuconfig data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/menuconfig.png data-sub-html="<h2>menuconfig</h2><p>menuconfig</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/menuconfig.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/menuconfig.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/menuconfig.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/menuconfig.png 2x" sizes=auto alt=menuconfig></a><figcaption class=image-caption>menuconfig</figcaption></figure></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span><span class=lnt>7
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>首先进入<span class=s2>&#34;Gerenal Setup&#34;</span>  
-</span></span><span class=line><span class=cl>选择到<span class=s2>&#34;Local version - append to kernel release&#34;</span>  
-</span></span><span class=line><span class=cl>清空里面所有内容  
-</span></span><span class=line><span class=cl>然后取消勾选<span class=s2>&#34;Automatically append version information to the version string&#34;</span>  
-</span></span><span class=line><span class=cl>接着选中<span class=s2>&#34;Default hostname&#34;</span>，输入<span class=s2>&#34;kali&#34;</span>  
-</span></span><span class=line><span class=cl>接着勾选<span class=s2>&#34;System V IPC&#34;</span>  
-</span></span><span class=line><span class=cl>然后返回上一级菜单  
-</span></span></code></pre></td></tr></table></div></div><p>如图所示<br><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/general.png title=general data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/general.png data-sub-html="<h2>general</h2><p>general</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/general.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/general.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/general.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/general.png 2x" sizes=auto alt=general></a><figcaption class=image-caption>general</figcaption></figure></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span><span class=lnt>7
-</span><span class=lnt>8
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>接着进入到<span class=s2>&#34;Enable loadable module support&#34;</span>  
-</span></span><span class=line><span class=cl>勾选以下几个选项:  
-</span></span><span class=line><span class=cl><span class=s2>&#34;loadable module support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Forced module loading&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Modules unloading&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Forced module unloading&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Module versioning support&#34;</span>  
-</span></span><span class=line><span class=cl>然后返回上一级菜单
-</span></span></code></pre></td></tr></table></div></div><p>如图所示<br><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/module.png title=module data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/module.png data-sub-html="<h2>module</h2><p>module</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/module.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/module.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/module.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/module.png 2x" sizes=auto alt=module></a><figcaption class=image-caption>module</figcaption></figure></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>接着进入到<span class=s2>&#34;Networking support&#34;</span> -&gt; <span class=s2>&#34;Bluetooth subsystem support&#34;</span> -&gt; <span class=s2>&#34;Bluetooth drivers support&#34;</span>  
-</span></span><span class=line><span class=cl>勾选以下几个选项:  
-</span></span><span class=line><span class=cl><span class=s2>&#34;HCI USB driver&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Broadcom protocol support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Realtek protocol support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;HCI UART driver&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;HCI BCM203x USB driver&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;HCI BPA10x USB driver&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;HCI BlueFRITZ! USB driver&#34;</span>  
-</span></span><span class=line><span class=cl>然后返回上一级菜单
-</span></span></code></pre></td></tr></table></div></div><p>如图所示<br><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_driver.png title=bluetooth-driver data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_driver.png data-sub-html="<h2>bluetooth-driver</h2><p>bluetooth-driver</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_driver.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_driver.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_driver.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_driver.png 2x" sizes=auto alt=bluetooth-driver></a><figcaption class=image-caption>bluetooth-driver</figcaption></figure></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span><span class=lnt>7
-</span><span class=lnt>8
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>勾选以下几个选项：  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Bluetooth Classic (BR/EDR) features&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;RFCOMM protocol support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;RFCOMM TTY support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;BNEP protocol support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;HIDP protocol support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Bluetooth Low Energy (LE) features&#34;</span>  
-</span></span><span class=line><span class=cl>然后返回上一级菜单  
-</span></span></code></pre></td></tr></table></div></div><p>如图所示<br><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_subsystem.png title=bluetooth data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_subsystem.png data-sub-html="<h2>bluetooth</h2><p>bluetooth</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_subsystem.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_subsystem.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_subsystem.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_subsystem.png 2x" sizes=auto alt=bluetooth></a><figcaption class=image-caption>bluetooth</figcaption></figure></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span><span class=lnt>7
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>进入到<span class=s2>&#34;Wireless&#34;</span>  勾选以下几个选项：  
-</span></span><span class=line><span class=cl><span class=s2>&#34;nl80211 testmode command&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;use statically compiled regulatory rules database&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;cfg80211 wireless extensions compatibility&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Generic IEEE 802.11 Networking Stack (mac80211)&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Enable mac80211 mesh networking (pre-802.11s) support&#34;</span>  
-</span></span><span class=line><span class=cl>然后返回上一级菜单
-</span></span></code></pre></td></tr></table></div></div><p>如图所示<br><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless.png title=wireless data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless.png data-sub-html="<h2>wireless</h2><p>wireless</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless.png 2x" sizes=auto alt=wireless></a><figcaption class=image-caption>wireless</figcaption></figure></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span><span class=lnt>7
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>接着进入到<span class=s2>&#34;Device Drivers&#34;</span> -&gt; <span class=s2>&#34;Network device support&#34;</span> -&gt; <span class=s2>&#34;USB Network Adapters&#34;</span>  
-</span></span><span class=line><span class=cl>勾选以下几个选项：  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB RTL8150 based ethernet device support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Realtek RTL8152/RTL8153 Based USB Ethernet Adapters&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;ASIX AX88xxx Based USB 2.0 Ethernet Adapters&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;ASIX AX88179/178A USB 3.0/2.0 to Gigabit Ethernet&#34;</span>. 
-</span></span><span class=line><span class=cl>然后返回上一级菜单
-</span></span></code></pre></td></tr></table></div></div><p>如图所示<br><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_network.png title=usb_net data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_network.png data-sub-html="<h2>usb_net</h2><p>usb_net</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_network.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_network.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_network.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_network.png 2x" sizes=auto alt=usb_net></a><figcaption class=image-caption>usb_net</figcaption></figure></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span><span class=lnt>28
-</span><span class=lnt>29
-</span><span class=lnt>30
-</span><span class=lnt>31
-</span><span class=lnt>32
-</span><span class=lnt>33
-</span><span class=lnt>34
-</span><span class=lnt>35
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>接着进入到<span class=s2>&#34;Wireless LAN&#34;</span>  
-</span></span><span class=line><span class=cl>勾选以下几个选项：  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Atheros/Qualcomm devices&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Atheros HTC based wireless cards support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Linux Community AR9170 802.11n USB support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Atheros mobile chipsets support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Atheros ath6kl USB support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;MediaTek devices&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;MediaTek MT7601U (USB) support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Ralink devices&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Ralink driver support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Realtek devices&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Realtek 8187 and 8187B USB support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Realtek rtlwifi family of devices&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;RTL8723AU/RTL8188[CR]U/RTL819[12]CU (mac80211) support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Include support for untested Realtek 8xxx USB devices (EXPERIMENTAL)&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;ZyDAS devices&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB ZD1201 based Wireless device support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;ZyDAS ZD1211/ZD1211B USB-wireless support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Wireless RNDIS USB support&#34;</span>  
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>在<span class=s2>&#34;Ralink driver support&#34;</span>中勾选以下几个选项：  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Ralink rt2500 (USB) support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Ralink rt2501/rt73 (USB) support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Ralink rt27xx/rt28xx/rt30xx (USB) support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;rt2800usb - Include support for rt33xx devices&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;rt2800usb - Include support for rt35xx devices (EXPERIMENTAL)&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;rt2800usb - Include support for rt3573 devices (EXPERIMENTAL)&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;rt2800usb - Include support for rt53xx devices (EXPERIMENTAL)&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;rt2800usb - Include support for rt55xx devices (EXPERIMENTAL)&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;rt2800usb - Include support for unknown (USB) devices&#34;</span>  
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>在<span class=s2>&#34;Realtek rtlwifi family of devices&#34;</span> 中勾选
-</span></span><span class=line><span class=cl><span class=s2>&#34;Realtek RTL8192CU/RTL8188CU USB Wireless Network Adapter&#34;</span>  
-</span></span><span class=line><span class=cl>然后返回主菜单
-</span></span></code></pre></td></tr></table></div></div><p>如图所示<br><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless_lan.png title=Atheros data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless_lan.png data-sub-html="<h2>Atheros</h2><p>Atheros</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless_lan.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless_lan.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless_lan.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless_lan.png 2x" sizes=auto alt=Atheros></a><figcaption class=image-caption>Atheros</figcaption></figure></p><p><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/mediatek.png title=MediaTek data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/mediatek.png data-sub-html="<h2>MediaTek</h2><p>MediaTek</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/mediatek.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/mediatek.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/mediatek.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/mediatek.png 2x" sizes=auto alt=MediaTek></a><figcaption class=image-caption>MediaTek</figcaption></figure></p><p><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/ralink.png title=Ralink data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/ralink.png data-sub-html="<h2>Ralink</h2><p>Ralink</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/ralink.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/ralink.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/ralink.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/ralink.png 2x" sizes=auto alt=Ralink></a><figcaption class=image-caption>Ralink</figcaption></figure></p><p><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/realtek.png title=Realtek data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/realtek.png data-sub-html="<h2>Realtek</h2><p>Realtek</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/realtek.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/realtek.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/realtek.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/realtek.png 2x" sizes=auto alt=Realtek></a><figcaption class=image-caption>Realtek</figcaption></figure></p><p><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/zydas.png title=ZyDAS data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/zydas.png data-sub-html="<h2>ZyDAS</h2><p>ZyDAS</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/zydas.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/zydas.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/zydas.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/zydas.png 2x" sizes=auto alt=ZyDAS></a><figcaption class=image-caption>ZyDAS</figcaption></figure></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>进入到<span class=s2>&#34;Device Drivers&#34;</span> -&gt; <span class=s2>&#34;Multimedia support&#34;</span> 勾选：  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Digital TV support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Software defined radio support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Media USB Adapters&#34;</span>  
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>在<span class=s2>&#34;Media USB Adapters&#34;</span>中 勾选：  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Airspy&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;HackRF&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Mirics MSi 2500&#34;</span>  
-</span></span><span class=line><span class=cl>然后拉到最下面，取消勾选  <span class=s2>&#34;Autoselect ancillary drivers (tuners, sensors, i2c, spi, frontends)&#34;</span>  
-</span></span><span class=line><span class=cl>取消勾选 <span class=s2>&#34;I2C Encoders, decoders, sensors and other helper chips&#34;</span> 内所有选项  
-</span></span><span class=line><span class=cl>取消勾选 <span class=s2>&#34;Customize TV tuners&#34;</span> 内除了 <span class=s2>&#34;Rafael Micro R820T silicon tuner&#34;</span> 以外所有选项  
-</span></span><span class=line><span class=cl>在 <span class=s2>&#34;Customise DVB Frontends&#34;</span> 内取消勾选除了：  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Realtek RTL2830 DVB-T&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Realtek RTL2832 DVB-T&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Realtek RTL2832 SDR&#34;</span>  
-</span></span><span class=line><span class=cl>以外所有的选项  
-</span></span><span class=line><span class=cl>然后返回主菜单
-</span></span></code></pre></td></tr></table></div></div><p>如图所示<br><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/multimedia.png title=Multimedia_support data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/multimedia.png data-sub-html="<h2>Multimedia_support</h2><p>Multimedia_support</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/multimedia.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/multimedia.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/multimedia.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/multimedia.png 2x" sizes=auto alt=Multimedia_support></a><figcaption class=image-caption>Multimedia_support</figcaption></figure></p><p><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/media_usb.png title=Media_usb data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/media_usb.png data-sub-html="<h2>Media_usb</h2><p>Media_usb</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/media_usb.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/media_usb.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/media_usb.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/media_usb.png 2x" sizes=auto alt=Media_usb></a><figcaption class=image-caption>Media_usb</figcaption></figure></p><p><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/unselect.png title=unselect data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/unselect.png data-sub-html="<h2>unselect</h2><p>unselect</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/unselect.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/unselect.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/unselect.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/unselect.png 2x" sizes=auto alt=unselect></a><figcaption class=image-caption>unselect</figcaption></figure></p><p><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_encoder.png title=I2C_EN data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_encoder.png data-sub-html="<h2>I2C_EN</h2><p>I2C_EN</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_encoder.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_encoder.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_encoder.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_encoder.png 2x" sizes=auto alt=I2C_EN></a><figcaption class=image-caption>I2C_EN</figcaption></figure></p><p><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_tv.png title=Custom_TV data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_tv.png data-sub-html="<h2>Custom_TV</h2><p>Custom_TV</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_tv.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_tv.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_tv.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_tv.png 2x" sizes=auto alt=Custom_TV></a><figcaption class=image-caption>Custom_TV</figcaption></figure><br><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_dvb.png title=Custom_DVB data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_dvb.png data-sub-html="<h2>Custom_DVB</h2><p>Custom_DVB</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_dvb.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_dvb.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_dvb.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_dvb.png 2x" sizes=auto alt=Custom_DVB></a><figcaption class=image-caption>Custom_DVB</figcaption></figure></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span><span class=lnt>7
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>进入到<span class=s2>&#34;Device Drivers&#34;</span> -&gt; <span class=s2>&#34;HID support&#34;</span> 勾选：  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Battery level reporting for HID devices&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;/dev/hidraw raw HID device support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;User-space I/O driver support for HID subsystem&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Generic HID driver&#34;</span>  
-</span></span><span class=line><span class=cl>勾选<span class=s2>&#34;Special HID drivers&#34;</span>  <span class=s2>&#34;USB HID support&#34;</span>  <span class=s2>&#34;HID over I2C transport layer&#34;</span>  内所有选项
-</span></span><span class=line><span class=cl>然后返回上一级菜单
-</span></span></code></pre></td></tr></table></div></div><p>如图所示<figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/hid_support.png title=HID_support data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/hid_support.png data-sub-html="<h2>HID_support</h2><p>HID_support</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/hid_support.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/hid_support.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/hid_support.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/hid_support.png 2x" sizes=auto alt=HID_support></a><figcaption class=image-caption>HID_support</figcaption></figure><br><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/special_hid.png title=Special_HID data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/special_hid.png data-sub-html="<h2>Special_HID</h2><p>Special_HID</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/special_hid.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/special_hid.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/special_hid.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/special_hid.png 2x" sizes=auto alt=Special_HID></a><figcaption class=image-caption>Special_HID</figcaption></figure><br><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_hid.png title=USB_HID data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_hid.png data-sub-html="<h2>USB_HID</h2><p>USB_HID</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_hid.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_hid.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_hid.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_hid.png 2x" sizes=auto alt=USB_HID></a><figcaption class=image-caption>USB_HID</figcaption></figure></p><p><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_hid.png title=I2C_HID data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_hid.png data-sub-html="<h2>I2C_HID</h2><p>I2C_HID</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_hid.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_hid.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_hid.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_hid.png 2x" sizes=auto alt=I2C_HID></a><figcaption class=image-caption>I2C_HID</figcaption></figure></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span><span class=lnt>28
-</span><span class=lnt>29
-</span><span class=lnt>30
-</span><span class=lnt>31
-</span><span class=lnt>32
-</span><span class=lnt>33
-</span><span class=lnt>34
-</span><span class=lnt>35
-</span><span class=lnt>36
-</span><span class=lnt>37
-</span><span class=lnt>38
-</span><span class=lnt>39
-</span><span class=lnt>40
-</span><span class=lnt>41
-</span><span class=lnt>42
-</span><span class=lnt>43
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>接着进入到<span class=s2>&#34;Device Drivers&#34;</span> -&gt; <span class=s2>&#34;USB support&#34;</span>  勾选：  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Support for Host-side USB&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;OTG support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB Modem (CDC ACM) support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB Wireless Device Management support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB Mass Storage support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB Serial Converter support&#34;</span>  
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>在<span class=s2>&#34;USB Serial Converter support&#34;</span> 中勾选：  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB Serial Console device support&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB Generic Serial Drive&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB Serial Simple Drive&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB Winchiphead CH341 Single Port Serial Driver&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB CP210x family of UART Bridge Controllers&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB FTDI Single Port Serial Driver&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB Prolific 2303 Single Port Serial Driver&#34;</span>  
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>在<span class=s2>&#34;USB Gadget Support&#34;</span>中勾选：  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB functions configurable through configfs&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Generic serial bulk in/out&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Abstract Control Model (CDC ACM)&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Object Exchange Model (CDC OBEX)&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Network Control Model (CDC NCM)&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Ethernet Control Model (CDC ECM)&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Ethernet Control Model (CDC ECM) subset&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;QCRNDIS&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;RNDIS&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;RMNET_BAM&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Ethernet Emulation Model (EEM)&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Mass storage&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Function filesystem (FunctionFS)&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;MTP gadget&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;PTP gadget&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Accessory gadget&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Audio Source gadget&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;Uevent notification of Gadget state&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;MIDI function&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;HID function&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB Diag function&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB Serial Character function&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB CCID function&#34;</span>  
-</span></span><span class=line><span class=cl><span class=s2>&#34;USB QDSS function&#34;</span>  
-</span></span><span class=line><span class=cl>接着返回主菜单，退出并保存配置
-</span></span></code></pre></td></tr></table></div></div><p>如图所示<figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_support.png title=USB_support data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_support.png data-sub-html="<h2>USB_support</h2><p>USB_support</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_support.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_support.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_support.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_support.png 2x" sizes=auto alt=USB_support></a><figcaption class=image-caption>USB_support</figcaption></figure></p><p><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_serial.png title=USB_Serial data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_serial.png data-sub-html="<h2>USB_Serial</h2><p>USB_Serial</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_serial.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_serial.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_serial.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_serial.png 2x" sizes=auto alt=USB_Serial></a><figcaption class=image-caption>USB_Serial</figcaption></figure></p><p><figure><a class=lightgallery href=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_gadget.png title=USB_Gadget data-thumbnail=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_gadget.png data-sub-html="<h2>USB_Gadget</h2><p>USB_Gadget</p>"><img loading=lazy src=https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_gadget.png srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_gadget.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_gadget.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_gadget.png 2x" sizes=auto alt=USB_Gadget></a><figcaption class=image-caption>USB_Gadget</figcaption></figure></p><h4 id=保存配置 class=headerLink><a href=#%e4%bf%9d%e5%ad%98%e9%85%8d%e7%bd%ae class=header-mark></a>7.0.12 保存配置</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>make <span class=si>${</span><span class=nv>args</span><span class=si>}</span> savedefconfig
-</span></span></code></pre></td></tr></table></div></div><h4 id=编译内核 class=headerLink><a href=#%e7%bc%96%e8%af%91%e5%86%85%e6%a0%b8 class=header-mark></a>7.0.13 编译内核</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>make <span class=si>${</span><span class=nv>args</span><span class=si>}</span> 2&gt;<span class=p>&amp;</span><span class=m>1</span> <span class=p>|</span> tee kernel.log
-</span></span></code></pre></td></tr></table></div></div><h4 id=编译内核模块 class=headerLink><a href=#%e7%bc%96%e8%af%91%e5%86%85%e6%a0%b8%e6%a8%a1%e5%9d%97 class=header-mark></a>7.0.14 编译内核模块</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>make <span class=si>${</span><span class=nv>args</span><span class=si>}</span> <span class=nv>INSTALL_MOD_PATH</span><span class=o>=</span><span class=s2>&#34;.&#34;</span> <span class=nv>INSTALL_MOD_STRIP</span><span class=o>=</span><span class=m>1</span> modules_install
-</span></span></code></pre></td></tr></table></div></div><h2 id=0x07-构建nethunter-kernel-installer内核包 class=headerLink><a href=#0x07-%e6%9e%84%e5%bb%banethunter-kernel-installer%e5%86%85%e6%a0%b8%e5%8c%85 class=header-mark></a>8 0x07 构建NetHunter-Kernel-Installer内核包</h2><h4 id=下载kali官方构建脚本 class=headerLink><a href=#%e4%b8%8b%e8%bd%bdkali%e5%ae%98%e6%96%b9%e6%9e%84%e5%bb%ba%e8%84%9a%e6%9c%ac class=header-mark></a>8.0.15 下载Kali官方构建脚本</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>git clone https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-project /root/kali-nethunter-project --depth<span class=o>=</span><span class=m>1</span>
-</span></span></code></pre></td></tr></table></div></div><h4 id=编辑机型列表 class=headerLink><a href=#%e7%bc%96%e8%be%91%e6%9c%ba%e5%9e%8b%e5%88%97%e8%a1%a8 class=header-mark></a>8.0.16 编辑机型列表</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>mkdir -p /root/kali-nethunter-project/nethunter-installer/devices/  
-</span></span><span class=line><span class=cl>touch /root/kali-nethunter-project/nethunter-installer/devices/devices.cfg  
-</span></span><span class=line><span class=cl>vim /root/kali-nethunter-project/nethunter-installer/devices/devices.cfg  
-</span></span></code></pre></td></tr></table></div></div><p>按照<a href=https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-devices#how-to-add-a-newunsupported-device target=_blank rel="noopener noreferrer">官方教程</a>，添加以下内容并保存</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># Xiaomi Redmi4X for crDroid Android 11  </span>
-</span></span><span class=line><span class=cl><span class=o>[</span>santoni<span class=o>]</span>  
-</span></span><span class=line><span class=cl><span class=nv>author</span> <span class=o>=</span> <span class=s2>&#34;DroidKali&#34;</span>  
-</span></span><span class=line><span class=cl><span class=nv>arch</span> <span class=o>=</span> arm64  
-</span></span><span class=line><span class=cl><span class=nv>version</span> <span class=o>=</span> <span class=s2>&#34;v1.0&#34;</span>  
-</span></span><span class=line><span class=cl><span class=nv>flasher</span> <span class=o>=</span> anykernel  
-</span></span><span class=line><span class=cl><span class=nv>modules</span> <span class=o>=</span> <span class=m>1</span>  
-</span></span><span class=line><span class=cl><span class=nv>slot_device</span> <span class=o>=</span> <span class=m>0</span>  
-</span></span><span class=line><span class=cl><span class=nv>block</span> <span class=o>=</span> /dev/block/bootdevice/by-name/boot  
-</span></span><span class=line><span class=cl><span class=nv>devicenames</span> <span class=o>=</span> santoni,Redmi4x  
-</span></span></code></pre></td></tr></table></div></div><h4 id=创建机型对应的文件夹 class=headerLink><a href=#%e5%88%9b%e5%bb%ba%e6%9c%ba%e5%9e%8b%e5%af%b9%e5%ba%94%e7%9a%84%e6%96%87%e4%bb%b6%e5%a4%b9 class=header-mark></a>8.0.17 创建机型对应的文件夹</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>mkdir -p /root/kali-nethunter-project/nethunter-installer/devices/eleven/santoni/modules/system/lib/modules  
-</span></span></code></pre></td></tr></table></div></div><h4 id=复制所需要的文件 class=headerLink><a href=#%e5%a4%8d%e5%88%b6%e6%89%80%e9%9c%80%e8%a6%81%e7%9a%84%e6%96%87%e4%bb%b6 class=header-mark></a>8.0.18 复制所需要的文件</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cp out/arch/arm64/boot/Image.gz-dtb /root/kali-nethunter-project/nethunter-installer/devices/eleven/santoni  
-</span></span><span class=line><span class=cl>rm -rf out/lib/modules/<span class=si>${</span><span class=nv>make</span><span class=p> kernelversion</span><span class=si>}</span>-NetHunter/source  
-</span></span><span class=line><span class=cl>rm -rf out/lib/modules/<span class=si>${</span><span class=nv>make</span><span class=p> kernelversion</span><span class=si>}</span>-NetHunter/build  
-</span></span><span class=line><span class=cl>cp -r out/lib/modules/<span class=si>${</span><span class=nv>make</span><span class=p> kernelversion</span><span class=si>}</span>-NetHunter /root/kali-nethunter-project/nethunter-installer/devices/eleven/santoni/modules/system/lib/modules/  
-</span></span></code></pre></td></tr></table></div></div><h4 id=生成nethunter-kernnel-installer安装包 class=headerLink><a href=#%e7%94%9f%e6%88%90nethunter-kernnel-installer%e5%ae%89%e8%a3%85%e5%8c%85 class=header-mark></a>8.0.19 生成NetHunter-Kernnel-Installer安装包</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=nb>cd</span> /root/kali-nethunter-project/nethunter-installer/  
-</span></span><span class=line><span class=cl>python3 build.py -d santoni --eleven --kernel
-</span></span></code></pre></td></tr></table></div></div><h2 id=0x08-下载adb-fastboot工具包 class=headerLink><a href=#0x08-%e4%b8%8b%e8%bd%bdadb-fastboot%e5%b7%a5%e5%85%b7%e5%8c%85 class=header-mark></a>9 0x08 下载ADB-FASTBOOT工具包</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>wget https://dl.google.com/android/repository/platform-tools-latest-linux.zip
-</span></span><span class=line><span class=cl>unzip paltform-tools-latest-linux.zip -d /usr/share/
-</span></span><span class=line><span class=cl><span class=nb>echo</span> <span class=s1>&#39;&#39;&#39;export PATH=&#34;/usr/share/platform-tools:$PATH&#34;&#39;&#39;&#39;</span> &gt; /root/.zshrc
-</span></span><span class=line><span class=cl><span class=nb>source</span> /root/.zshrc
-</span></span><span class=line><span class=cl>rm -rf platform-tools-latest-linux.zip
-</span></span></code></pre></td></tr></table></div></div><h2 id=0x09-刷入内核安装包 class=headerLink><a href=#0x09-%e5%88%b7%e5%85%a5%e5%86%85%e6%a0%b8%e5%ae%89%e8%a3%85%e5%8c%85 class=header-mark></a>10 0x09 刷入内核安装包</h2><h4 id=重启到recovery模式 class=headerLink><a href=#%e9%87%8d%e5%90%af%e5%88%b0recovery%e6%a8%a1%e5%bc%8f class=header-mark></a>10.0.20 重启到Recovery模式</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>adb reboot recovery
-</span></span></code></pre></td></tr></table></div></div><h4 id=刷入内核刷机包 class=headerLink><a href=#%e5%88%b7%e5%85%a5%e5%86%85%e6%a0%b8%e5%88%b7%e6%9c%ba%e5%8c%85 class=header-mark></a>10.0.21 刷入内核刷机包</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>adb sideload kernel-nethunter-eleven-santoni-20210905_111235.zip
-</span></span></code></pre></td></tr></table></div></div><h2 id=0x10-相关链接 class=headerLink><a href=#0x10-%e7%9b%b8%e5%85%b3%e9%93%be%e6%8e%a5 class=header-mark></a>11 0x10 相关链接</h2><p><a href=https://www.kali.org/docs/nethunter/ target=_blank rel="noopener noreferrer">Kali NetHunter | Kali Linux Documentation</a></p><p><a href=https://gitlab.com/kalilinux/nethunter/ target=_blank rel="noopener noreferrer">NetHunter gitlab repository</a></p><p><a href=https://zhuanlan.zhihu.com/p/24946336 target=_blank rel="noopener noreferrer">&ldquo;黑客手机"免费送-知乎专栏</a></p><p><a href=https://www.vuln.cn/7086 target=_blank rel="noopener noreferrer">跟我把Kali NetHunter编译至任意手机</a></p><p><a href=https://forums.kali.org/showthread.php?44899-Building-a-kernel-for-the-Razor-Phone-2-Live-feed target=_blank rel="noopener noreferrer">Building a Kernel for the Razor Phone 2 - Live feed</a></p><p><a href=https://github.com/nathanchance/android-kernel-clang target=_blank rel="noopener noreferrer">Information on Compiling Android Kernels with Clang</a></p><p><a href=https://www.akr-developers.com/d/129 target=_blank rel="noopener noreferrer">[内核向] - 交叉编译器的选择</a></p></div><div class=sponsor><div class=sponsor-avatar><img loading=lazy src=https://droidkali.github.io/images/head.jpg srcset="https://droidkali.github.io/images/head.jpg, https://droidkali.github.io/images/head.jpg 1.5x, https://droidkali.github.io/images/head.jpg 2x" sizes=auto alt=https://droidkali.github.io/images/head.jpg title=https://droidkali.github.io/images/head.jpg></div><p class=sponsor-bio><em>如果你觉得这篇文章对你有所帮助，欢迎赞赏~</em></p><a href=https://droidkali.github.io/images/wechatpay.png title=Sponsor target=_blank class=sponsor-button rel="noopener noreferrer"><i class="far fa-heart fa-fw icon" style=color:#ec6cb9></i>
-<span>赞赏</span></a></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-09-12</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><button title="分享到 Twitter" data-sharer=twitter data-url=https://droidkali.github.io/hugo-blog/2021/09/12/build-nethunter-kernel.html/ data-title="Kali Linux NetHunter内核编译指南" data-hashtags=NetHunter,Android,Kernel,内核编译><span class="fab fa-twitter fa-fw"></span></button><button title="分享到 微博" data-sharer=weibo data-url=https://droidkali.github.io/hugo-blog/2021/09/12/build-nethunter-kernel.html/ data-title="Kali Linux NetHunter内核编译指南"><span class="fab fa-weibo fa-fw"></span></button></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/hugo-blog/tags/nethunter/>NetHunter</a>,&nbsp;<a href=/hugo-blog/tags/android/>Android</a>,&nbsp;<a href=/hugo-blog/tags/kernel/>Kernel</a>,&nbsp;<a href=/hugo-blog/tags/%E5%86%85%E6%A0%B8%E7%BC%96%E8%AF%91/>内核编译</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/hugo-blog/>主页</a></span></section></div><div class=post-nav><a href=/hugo-blog/2019/05/07/gsm-sniffing.html/ class=prev rel=prev title="浅谈 GSM 网络的安全性 实战截取用户身份信息"><i class="fas fa-angle-left fa-fw"></i>浅谈 GSM 网络的安全性 实战截取用户身份信息</a>
-<a href=/hugo-blog/2021/12/30/log4j2-rce.html/ class=next rel=next title="Log4j2 RCE漏洞复现">Log4j2 RCE漏洞复现<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=valine class=comment></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://valine.js.org/>Valine</a>.</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreferrer" title="Hugo 0.118.2">Hugo</a> 强力驱动&nbsp;|&nbsp;托管在 <a title="Github Pages" href=https://docs.github.com/en/pages/ target=_blank rel="noopener noreffer">GitHub Pages</a> 上&nbsp;|&nbsp;主题 - <a href=https://github.com/HEIGE-PCloud/DoIt target=_blank rel="noopener noreferrer" title="DoIt 0.4.0"><i class="far fa-edit fa-fw"></i> DoIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2023</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=https://github.com/DroidKali target=_blank rel="noopener noreferrer">记忆里的纯真</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div><div class=footer-line></div><div class=footer-line></div></div></footer></div><div id=fixed-buttons><a href=#back-to-top id=back-to-top-button class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
-</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><div class=assets><link rel=stylesheet href=/hugo-blog/lib/valine/valine.min.css><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{valine:{appId:"K5FC5aI93BvFb3t5kKm44j64-gzGzoHsz",appKey:"y2RuCD7Vc7INR3evErdQ3huY",avatar:"mp",el:"#valine",emojiCDN:"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/",emojiMaps:{100:"1f4af.png",alien:"1f47d.png",anger:"1f4a2.png",angry:"1f620.png",anguished:"1f627.png",astonished:"1f632.png",black_heart:"1f5a4.png",blue_heart:"1f499.png",blush:"1f60a.png",bomb:"1f4a3.png",boom:"1f4a5.png",broken_heart:"1f494.png",brown_heart:"1f90e.png",clown_face:"1f921.png",cold_face:"1f976.png",cold_sweat:"1f630.png",confounded:"1f616.png",confused:"1f615.png",cry:"1f622.png",crying_cat_face:"1f63f.png",cupid:"1f498.png",dash:"1f4a8.png",disappointed:"1f61e.png",disappointed_relieved:"1f625.png",dizzy:"1f4ab.png",dizzy_face:"1f635.png",drooling_face:"1f924.png",exploding_head:"1f92f.png",expressionless:"1f611.png",face_vomiting:"1f92e.png",face_with_cowboy_hat:"1f920.png",face_with_hand_over_mouth:"1f92d.png",face_with_head_bandage:"1f915.png",face_with_monocle:"1f9d0.png",face_with_raised_eyebrow:"1f928.png",face_with_rolling_eyes:"1f644.png",face_with_symbols_on_mouth:"1f92c.png",face_with_thermometer:"1f912.png",fearful:"1f628.png",flushed:"1f633.png",frowning:"1f626.png",ghost:"1f47b.png",gift_heart:"1f49d.png",green_heart:"1f49a.png",grimacing:"1f62c.png",grin:"1f601.png",grinning:"1f600.png",hankey:"1f4a9.png",hear_no_evil:"1f649.png",heart:"2764-fe0f.png",heart_decoration:"1f49f.png",heart_eyes:"1f60d.png",heart_eyes_cat:"1f63b.png",heartbeat:"1f493.png",heartpulse:"1f497.png",heavy_heart_exclamation_mark_ornament:"2763-fe0f.png",hole:"1f573-fe0f.png",hot_face:"1f975.png",hugging_face:"1f917.png",hushed:"1f62f.png",imp:"1f47f.png",innocent:"1f607.png",japanese_goblin:"1f47a.png",japanese_ogre:"1f479.png",joy:"1f602.png",joy_cat:"1f639.png",kiss:"1f48b.png",kissing:"1f617.png",kissing_cat:"1f63d.png",kissing_closed_eyes:"1f61a.png",kissing_heart:"1f618.png",kissing_smiling_eyes:"1f619.png",laughing:"1f606.png",left_speech_bubble:"1f5e8-fe0f.png",love_letter:"1f48c.png",lying_face:"1f925.png",mask:"1f637.png",money_mouth_face:"1f911.png",nauseated_face:"1f922.png",nerd_face:"1f913.png",neutral_face:"1f610.png",no_mouth:"1f636.png",open_mouth:"1f62e.png",orange_heart:"1f9e1.png",partying_face:"1f973.png",pensive:"1f614.png",persevere:"1f623.png",pleading_face:"1f97a.png",pouting_cat:"1f63e.png",purple_heart:"1f49c.png",rage:"1f621.png",relaxed:"263a-fe0f.png",relieved:"1f60c.png",revolving_hearts:"1f49e.png",right_anger_bubble:"1f5ef-fe0f.png",robot_face:"1f916.png",rolling_on_the_floor_laughing:"1f923.png",scream:"1f631.png",scream_cat:"1f640.png",see_no_evil:"1f648.png",shushing_face:"1f92b.png",skull:"1f480.png",skull_and_crossbones:"2620-fe0f.png",sleeping:"1f634.png",sleepy:"1f62a.png",slightly_frowning_face:"1f641.png",slightly_smiling_face:"1f642.png",smile:"1f604.png",smile_cat:"1f638.png",smiley:"1f603.png",smiley_cat:"1f63a.png",smiling_face_with_3_hearts:"1f970.png",smiling_imp:"1f608.png",smirk:"1f60f.png",smirk_cat:"1f63c.png",sneezing_face:"1f927.png",sob:"1f62d.png",space_invader:"1f47e.png",sparkling_heart:"1f496.png",speak_no_evil:"1f64a.png",speech_balloon:"1f4ac.png","star-struck":"1f929.png",stuck_out_tongue:"1f61b.png",stuck_out_tongue_closed_eyes:"1f61d.png",stuck_out_tongue_winking_eye:"1f61c.png",sunglasses:"1f60e.png",sweat:"1f613.png",sweat_drops:"1f4a6.png",sweat_smile:"1f605.png",thinking_face:"1f914.png",thought_balloon:"1f4ad.png",tired_face:"1f62b.png",triumph:"1f624.png",two_hearts:"1f495.png",unamused:"1f612.png",upside_down_face:"1f643.png",weary:"1f629.png",white_frowning_face:"2639-fe0f.png",white_heart:"1f90d.png",wink:"1f609.png",woozy_face:"1f974.png",worried:"1f61f.png",yawning_face:"1f971.png",yellow_heart:"1f49b.png",yum:"1f60b.png",zany_face:"1f92a.png",zipper_mouth_face:"1f910.png",zzz:"1f4a4.png"},enableQQ:!0,highlight:!0,lang:"zh-cn",pageSize:10,placeholder:"随便说点什么叭~",recordIP:!1,visitor:!0}},data:{"desktop-header-typeit":"纯真's Blog","mobile-header-typeit":"纯真's Blog"},search:{algoliaAppID:"5YGRNRQK1G",algoliaIndex:"zh_cn_index",algoliaSearchKey:"0ff6874805de24b84aa1d5ebccad56cd",highlightTag:"em",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"algolia"},sharerjs:!0,table:{sort:!0},typeit:{cursorChar:"|",cursorSpeed:1e3,data:{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},duration:-1,speed:100}}</script><script type=text/javascript src=https://fastly.jsdelivr.net/npm/tablesort@5.3.0/src/tablesort.min.js></script><script type=text/javascript src=https://fastly.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js></script><script type=text/javascript src=https://fastly.jsdelivr.net/npm/sharer.js@0.4.2/sharer.min.js></script><script type=text/javascript src=https://fastly.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript src=/hugo-blog/js/theme.min.js defer></script><script type=text/javascript src=https://fastly.jsdelivr.net/npm/valine@1.5.1/dist/Valine.min.js defer></script><script type=text/javascript src=/hugo-blog/js/valine.min.js defer></script></div></body></html>
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title>Kali Linux NetHunter内核编译指南 - 纯真&#39;s Blog</title><meta name="Description" content="本文主要介绍Kali Linux NetHunter内核的编译适配过程。"><meta property="og:title" content="Kali Linux NetHunter内核编译指南" />
+<meta property="og:description" content="本文主要介绍Kali Linux NetHunter内核的编译适配过程。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://droidkali.github.io/2021/09/12/build-nethunter-kernel.html/" /><meta property="og:image" content="https://droidkali.github.io/images/avatar.webp"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-09-12T22:35:39+00:00" />
+<meta property="article:modified_time" content="2021-09-12T22:35:39+00:00" /><meta property="og:site_name" content="纯真&#39;s Blog" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://droidkali.github.io/images/avatar.webp"/>
+
+<meta name="twitter:title" content="Kali Linux NetHunter内核编译指南"/>
+<meta name="twitter:description" content="本文主要介绍Kali Linux NetHunter内核的编译适配过程。"/>
+<meta name="application-name" content="纯真&#39;s Blog">
+<meta name="apple-mobile-web-app-title" content="纯真&#39;s Blog">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="images/head.jpg"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="https://droidkali.github.io/2021/09/12/build-nethunter-kernel.html/" /><link rel="prev" href="https://droidkali.github.io/2019/05/07/gsm-sniffing.html/" /><link rel="next" href="https://droidkali.github.io/2021/12/30/log4j2-rce.html/" />
+<link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css"><link rel="stylesheet" href="/css/color.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css">
+        <noscript><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://fastly.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
+        <noscript><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><meta name="google-site-verification" content="MQ8DNu27ayX6B_4ObiEDK09vGr1fdy7kOAnbd09hJk4" /><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Kali Linux NetHunter内核编译指南",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/droidkali.github.io\/2021\/09\/12\/build-nethunter-kernel.html\/"
+        },"image": ["https:\/\/droidkali.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "NetHunter, Android, Kernel, 内核编译","wordcount":  3495 ,
+        "url": "https:\/\/droidkali.github.io\/2021\/09\/12\/build-nethunter-kernel.html\/","datePublished": "2021-09-12T22:35:39+00:00","dateModified": "2021-09-12T22:35:39+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "记忆里的纯真","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/droidkali.github.io\/images\/avatar.webp",
+                    "width":  528 ,
+                    "height":  560 
+                }},"authors": [{
+                        "@type": "Person",
+                        "name": "记忆里的纯真"                    
+                    }],"description": "本文主要介绍Kali Linux NetHunter内核的编译适配过程。"
+    }
+    </script><script src="//instant.page/5.2.0" defer type="module" integrity="sha384-jnZyxPjiipYXnSU0ygqeac2q7CVYMbh84q0uHVRRxEtvFPiQYbXWUorga2aqZJ0z"></script>
+</head>
+
+<body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark'); window.theme = theme;   window.isDark = window.theme !== 'light' }
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('auto' === 'light' || 'auto' === 'dark' || 'auto' === 'black') setTheme('auto'), saveTheme('auto'); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+        window.switchThemeEventSet = new Set()
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="纯真&#39;s Blog"><img
+        class="logo"
+        loading="lazy"
+        src="/images/head.jpg"
+        srcset="/images/head.jpg, /images/head.jpg 1.5x, /images/head.jpg 2x"
+        sizes="auto"
+        alt="/images/head.jpg"
+        title="/images/head.jpg" height="960"   width="960" ><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/about/"><i class="fas fa-user"></i> 关于 </a><a class="menu-item" href="/tags/"><i class="fas fa-tag"></i> 标签 </a><a class="menu-item" href="/categories/"><i class="fas fa-folder-open"></i> 分类 </a><a class="menu-item" href="/posts/"><i class="fas fa-archive"></i> 归档 </a><a class="menu-item" href="/friends/"><i class="fas fa-user-friends"></i> 友链 </a><a class="menu-item" href="/notes/"><i class="fas fa-book"></i> 备忘录 </a><a class="menu-item" href="/software/"><i class="fab fa-windows"></i> 常用软件 </a><a class="menu-item" href="https://github.com/DroidKali" title="GitHub" rel="noopener noreferrer" target="_blank"><i class='fab fa-github fa-fw'></i> GitHub </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-select" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                    <select class="color-theme-select" id="theme-select-desktop" title="切换主题">
+                        <option value="light">浅色</option>
+                        <option value="dark">深色</option>
+                        <option value="black">黑色</option>
+                        <option value="auto">跟随系统</option>
+                    </select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="纯真&#39;s Blog"><img
+        class="logo"
+        loading="lazy"
+        src="/images/head.jpg"
+        srcset="/images/head.jpg, /images/head.jpg 1.5x, /images/head.jpg 2x"
+        sizes="auto"
+        alt="/images/head.jpg"
+        title="/images/head.jpg" height="960"   width="960" ><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/about/" title=""><i class="fas fa-user"></i>关于</a><a class="menu-item" href="/tags/" title=""><i class="fas fa-tag"></i>标签</a><a class="menu-item" href="/categories/" title=""><i class="fas fa-folder-open"></i>分类</a><a class="menu-item" href="/posts/" title=""><i class="fas fa-archive"></i>归档</a><a class="menu-item" href="/friends/" title=""><i class="fas fa-user-friends"></i>友链</a><a class="menu-item" href="/notes/" title=""><i class="fas fa-book"></i>备忘录</a><a class="menu-item" href="/software/" title=""><i class="fab fa-windows"></i>常用软件</a><a class="menu-item" href="https://github.com/DroidKali" title="GitHub" rel="noopener noreferrer" target="_blank"><i class='fab fa-github fa-fw'></i>GitHub</a><a href="javascript:void(0);" class="menu-item theme-select" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+                <select class="color-theme-select" id="theme-select-mobile" title="切换主题">
+                    <option value="light">浅色</option>
+                    <option value="dark">深色</option>
+                    <option value="black">黑色</option>
+                    <option value="auto">跟随系统</option>
+                </select>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="toc" id="toc-auto">
+        <h2 class="toc-title">目录</h2>
+        <div class="toc-content" id="toc-content-auto"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#对读者的要求">对读者的要求</a></li>
+            <li><a href="#开始前的准备">开始前的准备</a></li>
+            <li><a href="#内核源码的选择">内核源码的选择</a></li>
+            <li><a href="#交叉编译工具链的选择">交叉编译工具链的选择</a></li>
+            <li><a href="#如何查找自己手机的内核源码">如何查找自己手机的内核源码</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#0x01-环境准备">0x01 环境准备</a></li>
+    <li><a href="#0x02-系统设置">0x02 系统设置</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#设置更新源">设置更新源</a></li>
+            <li><a href="#更新系统">更新系统</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#0x03-安装编译依赖">0x03 安装编译依赖</a></li>
+    <li><a href="#0x04-下载交叉编译工具链">0x04 下载交叉编译工具链</a></li>
+    <li><a href="#0x05-下载内核源码">0x05 下载内核源码</a></li>
+    <li><a href="#0x06-编译内核">0x06 编译内核</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#设置环境变量">设置环境变量</a></li>
+            <li><a href="#打入补丁">打入补丁</a></li>
+            <li><a href="#生成defconfig">生成defconfig</a></li>
+            <li><a href="#图形化配置内核选项">图形化配置内核选项</a></li>
+            <li><a href="#保存配置">保存配置</a></li>
+            <li><a href="#编译内核">编译内核</a></li>
+            <li><a href="#编译内核模块">编译内核模块</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#0x07-构建nethunter-kernel-installer内核包">0x07 构建NetHunter-Kernel-Installer内核包</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#下载kali官方构建脚本">下载Kali官方构建脚本</a></li>
+            <li><a href="#编辑机型列表">编辑机型列表</a></li>
+            <li><a href="#创建机型对应的文件夹">创建机型对应的文件夹</a></li>
+            <li><a href="#复制所需要的文件">复制所需要的文件</a></li>
+            <li><a href="#生成nethunter-kernnel-installer安装包">生成NetHunter-Kernnel-Installer安装包</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#0x08-下载adb-fastboot工具包">0x08 下载ADB-FASTBOOT工具包</a></li>
+    <li><a href="#0x09-刷入内核安装包">0x09 刷入内核安装包</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#重启到recovery模式">重启到Recovery模式</a></li>
+            <li><a href="#刷入内核刷机包">刷入内核刷机包</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#0x10-相关链接">0x10 相关链接</a></li>
+  </ul>
+</nav></div>
+    </div><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC", "true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Kali Linux NetHunter内核编译指南</h1><div class="post-meta">
+            <div class="post-meta-line">
+                <span class="post-author"><span class='author'><span class="author fas fa-user-circle fa-fw"></span><span class='screen-reader-text'>  </span><a href='https://droidkali.github.io/authors/%E8%AE%B0%E5%BF%86%E9%87%8C%E7%9A%84%E7%BA%AF%E7%9C%9F'>记忆里的纯真</a></span>
+                </span>&nbsp;<span class="post-category">收录于 </span>&nbsp;<span class="post-category">类别 <a href="/categories/kali/"><i class="far fa-folder fa-fw"></i>kali</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-09-12">2021-09-12</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime="2021-09-12">2021-09-12</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3495 字&nbsp;<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;<span id="/2021/09/12/build-nethunter-kernel.html/" class="leancloud_visitors" data-flag-title="Kali Linux NetHunter内核编译指南">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class="leancloud-visitors-count"></span>&nbsp;次阅读
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#对读者的要求">对读者的要求</a></li>
+            <li><a href="#开始前的准备">开始前的准备</a></li>
+            <li><a href="#内核源码的选择">内核源码的选择</a></li>
+            <li><a href="#交叉编译工具链的选择">交叉编译工具链的选择</a></li>
+            <li><a href="#如何查找自己手机的内核源码">如何查找自己手机的内核源码</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#0x01-环境准备">0x01 环境准备</a></li>
+    <li><a href="#0x02-系统设置">0x02 系统设置</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#设置更新源">设置更新源</a></li>
+            <li><a href="#更新系统">更新系统</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#0x03-安装编译依赖">0x03 安装编译依赖</a></li>
+    <li><a href="#0x04-下载交叉编译工具链">0x04 下载交叉编译工具链</a></li>
+    <li><a href="#0x05-下载内核源码">0x05 下载内核源码</a></li>
+    <li><a href="#0x06-编译内核">0x06 编译内核</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#设置环境变量">设置环境变量</a></li>
+            <li><a href="#打入补丁">打入补丁</a></li>
+            <li><a href="#生成defconfig">生成defconfig</a></li>
+            <li><a href="#图形化配置内核选项">图形化配置内核选项</a></li>
+            <li><a href="#保存配置">保存配置</a></li>
+            <li><a href="#编译内核">编译内核</a></li>
+            <li><a href="#编译内核模块">编译内核模块</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#0x07-构建nethunter-kernel-installer内核包">0x07 构建NetHunter-Kernel-Installer内核包</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#下载kali官方构建脚本">下载Kali官方构建脚本</a></li>
+            <li><a href="#编辑机型列表">编辑机型列表</a></li>
+            <li><a href="#创建机型对应的文件夹">创建机型对应的文件夹</a></li>
+            <li><a href="#复制所需要的文件">复制所需要的文件</a></li>
+            <li><a href="#生成nethunter-kernnel-installer安装包">生成NetHunter-Kernnel-Installer安装包</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#0x08-下载adb-fastboot工具包">0x08 下载ADB-FASTBOOT工具包</a></li>
+    <li><a href="#0x09-刷入内核安装包">0x09 刷入内核安装包</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#重启到recovery模式">重启到Recovery模式</a></li>
+            <li><a href="#刷入内核刷机包">刷入内核刷机包</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#0x10-相关链接">0x10 相关链接</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="0x00-前言" class="headerLink">
+    <a href="#0x00-%e5%89%8d%e8%a8%80" class="header-mark"></a>1 0x00 前言</h2><p>近年来随着各种HVV活动的兴起，各种新的概念层出不穷。其中就有近源渗透这个概念。<br>
+黑客行走江湖，哪儿能没有些趁手的兵器装备呢？ 相信很多人都曾梦想过拥有一台黑客专属手机，走到哪儿黑到哪儿。那么现实中这样的手机存在吗？答案是肯定的！NetHunter就能满足你所有的需求！<br>
+<a href="https://www.kali.org/docs/nethunter/" target="_blank" rel="noopener noreferrer">Kali Linux NetHunter</a>是由<em>Offensive-Security</em>团队打造的基于Android平台的渗透测试环境。<br>
+通过使用<em>Kali Linux NetHunter</em>我们可以使用诸如外接无线网卡破解WiFi，模拟BadUSB设备进行HID攻击，外接USB蓝牙适配器进行蓝牙攻击&hellip;&hellip;等各种近源渗透活动。<br>
+在<em>Kali Linux NetHunter</em><a href="https://www.kali.org/docs/nethunter/" target="_blank" rel="noopener noreferrer">官网</a>我们可以查阅官方支持的设备型号列表。</p>
+<h4 id="对读者的要求" class="headerLink">
+    <a href="#%e5%af%b9%e8%af%bb%e8%80%85%e7%9a%84%e8%a6%81%e6%b1%82" class="header-mark"></a>1.0.1 对读者的要求</h4><p>如果你会玩安卓刷机且手机型号恰好被官方支持，那么直接按照<a href="https://www.kali.org/docs/nethunter/installing-nethunter" target="_blank" rel="noopener noreferrer">官方教程</a>一步步来就好。<br>
+如果很不幸你的手机不被官方所支持但你会玩Linux且懂一些安卓开发以及C语言方面的知识想给自己的手机适配NetHunter，那么本篇教程就带你如何给一台不被官方支持的手机适配Kali NetHunter。</p>
+<h4 id="开始前的准备" class="headerLink">
+    <a href="#%e5%bc%80%e5%a7%8b%e5%89%8d%e7%9a%84%e5%87%86%e5%a4%87" class="header-mark"></a>1.0.2 开始前的准备</h4><p>· 一台能解锁BootLoader且内核源码开源的安卓手机<br>
+· 一台高性能x86_64 PC</p>
+<h4 id="内核源码的选择" class="headerLink">
+    <a href="#%e5%86%85%e6%a0%b8%e6%ba%90%e7%a0%81%e7%9a%84%e9%80%89%e6%8b%a9" class="header-mark"></a>1.0.3 内核源码的选择</h4><p>一般来说，手机厂商开源的内核源码代码质量参差不齐（一言难尽），如果我们要选择自己适配NetHunter的话最好选择知名第三方开发者Fork的源码进行编译。<br>
+比较知名的有：
+· <a href="https://github.com/LineageOS/" target="_blank" rel="noopener noreferrer">LineageOS</a><br>
+· <a href="https://github.com/PixelExperience-Devices/" target="_blank" rel="noopener noreferrer">PixelExperience</a><br>
+· <a href="https://github.com/crdroidandroid/" target="_blank" rel="noopener noreferrer">crDroid</a><br>
+· <a href="https://github.com/mokee/" target="_blank" rel="noopener noreferrer">MoKee</a><br>
+· <a href="https://github.com/Havoc-OS/" target="_blank" rel="noopener noreferrer">Havoc-OS</a><br>
+· <a href="https://github.com/arter97/" target="_blank" rel="noopener noreferrer">Arter97</a><br>
+&hellip;等，这里不再一一列举。</p>
+<h4 id="交叉编译工具链的选择" class="headerLink">
+    <a href="#%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91%e5%b7%a5%e5%85%b7%e9%93%be%e7%9a%84%e9%80%89%e6%8b%a9" class="header-mark"></a>1.0.4 交叉编译工具链的选择</h4><p>对于较老版本的内核（3.18.x以下）的一般是使用Google GCC4.9<br>
+对于较新版本的内核（4.4.x以上）的建议使用Clang来编译<br>
+对于Google gcc编译器，使用以下命令下载<br>
+64位：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://mirrors.bfsu.edu.cn/git/AOSP/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-10.0.0_r32 --depth<span class="o">=</span><span class="m">1</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>32位：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://mirrors.bfsu.edu.cn/git/AOSP/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 -b android-10.0.0_r32 --depth<span class="o">=</span><span class="m">1</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>对于Clang编译器，使用以下命令下载<br>
+Google官方Clang：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://mirrors.bfsu.edu.cn/git/AOSP/platform/prebuilts/clang/host/linux-x86 --depth<span class="o">=</span><span class="m">1</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Proton-clang:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/kdrag0n/proton-clang.git --depth<span class="o">=</span><span class="m">1</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="如何查找自己手机的内核源码" class="headerLink">
+    <a href="#%e5%a6%82%e4%bd%95%e6%9f%a5%e6%89%be%e8%87%aa%e5%b7%b1%e6%89%8b%e6%9c%ba%e7%9a%84%e5%86%85%e6%a0%b8%e6%ba%90%e7%a0%81" class="header-mark"></a>1.0.5 如何查找自己手机的内核源码</h4><p>对于已经开源内核源码的手机来说，一般只需要在GitHub上搜索关键字就能找到适合你的内核源码<br>
+一般搜索的关键字为<code>android_kernel_&lt;设备厂商名&gt;_&lt;设备CPU代号名&gt;</code><br>
+或者<code>kernel_&lt;设备厂商名&gt;_&lt;设备CPU代号&gt;</code><br>
+又或者<code>kernel_&lt;设备厂商名&gt;_&lt;设备代号&gt;</code>
+举个例子来说，我的设备是<em>小米Redmi 4X</em>，设备厂商是<em>xiaomi</em>，CPU代号是<em>MSM8937</em>，设备代号是<em>santoni</em>那么就可以在GitHub上搜索关键字<code>android_kernel_xiaomi_msm8937</code>或者<code>kernel_xiaomi_santoni</code>或者<code>kernel_xiaomi_msm8937</code>来找对应设备的内核源码。<br>
+这里还要注意的一点是所选取的内核源码尽量要与当前手机所使用的ROM Android版本对应，比如如果手机所使用的ROM是LineageOS的那就去找LineageOS所对应的内核源码，且分支也要一一对应。<br>
+当然你也可以选择在<a href="https://www.xda-developers.com/" target="_blank" rel="noopener noreferrer">XDA论坛</a>寻找其他第三方优秀作者提供的内核源码。</p>
+<h2 id="0x01-环境准备" class="headerLink">
+    <a href="#0x01-%e7%8e%af%e5%a2%83%e5%87%86%e5%a4%87" class="header-mark"></a>2 0x01 环境准备</h2><p>我这里使用VMware虚拟机安装Kali Linux系统来进行演示</p>
+<p><em>Kali Linux</em>最新镜像 <a href="https://mirrors.bfsu.edu.cn/kali-images/kali-weekly/" target="_blank" rel="noopener noreferrer">下载链接</a></p>
+<p><em>VMware Workstation Pro</em>虚拟机 <a href="https://www.vmware.com/cn/products/workstation-pro/workstation-pro-evaluation.html" target="_blank" rel="noopener noreferrer">下载链接</a></p>
+<p><em>ADB-FASTBOOT工具</em> for Linux <a href="https://dl.google.com/android/repository/platform-tools-latest-linux.zip" target="_blank" rel="noopener noreferrer">下载链接</a></p>
+<h2 id="0x02-系统设置" class="headerLink">
+    <a href="#0x02-%e7%b3%bb%e7%bb%9f%e8%ae%be%e7%bd%ae" class="header-mark"></a>3 0x02 系统设置</h2><h4 id="设置更新源" class="headerLink">
+    <a href="#%e8%ae%be%e7%bd%ae%e6%9b%b4%e6%96%b0%e6%ba%90" class="header-mark"></a>3.0.6 设置更新源</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;deb https://mirrors.bfsu.edu.cn/kali kali-rolling main non-free contrib&#34;</span> &gt; /etc/apt/sources.list
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="更新系统" class="headerLink">
+    <a href="#%e6%9b%b4%e6%96%b0%e7%b3%bb%e7%bb%9f" class="header-mark"></a>3.0.7 更新系统</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apt update <span class="o">&amp;&amp;</span> apt upgrade -y <span class="o">&amp;&amp;</span> apt full-upgrade -y <span class="o">&amp;&amp;</span> reboot
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="0x03-安装编译依赖" class="headerLink">
+    <a href="#0x03-%e5%ae%89%e8%a3%85%e7%bc%96%e8%af%91%e4%be%9d%e8%b5%96" class="header-mark"></a>4 0x03 安装编译依赖</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apt install -y curl wget vim git ccache automake flex lzop bison gperf <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>build-essential zip zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>libgl1-mesa-dev xsltproc unzip device-tree-compiler kmod python3 python3-pip
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="0x04-下载交叉编译工具链" class="headerLink">
+    <a href="#0x04-%e4%b8%8b%e8%bd%bd%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91%e5%b7%a5%e5%85%b7%e9%93%be" class="header-mark"></a>5 0x04 下载交叉编译工具链</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/kdrag0n/proton-clang.git /root/proton-clang --depth<span class="o">=</span><span class="m">1</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="0x05-下载内核源码" class="headerLink">
+    <a href="#0x05-%e4%b8%8b%e8%bd%bd%e5%86%85%e6%a0%b8%e6%ba%90%e7%a0%81" class="header-mark"></a>6 0x05 下载内核源码</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/crdroidandroid/android_kernel_xiaomi_msm8937.git
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> android_kernel_xiaomi_msm8937
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="0x06-编译内核" class="headerLink">
+    <a href="#0x06-%e7%bc%96%e8%af%91%e5%86%85%e6%a0%b8" class="header-mark"></a>7 0x06 编译内核</h2><h4 id="设置环境变量" class="headerLink">
+    <a href="#%e8%ae%be%e7%bd%ae%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f" class="header-mark"></a>7.0.8 设置环境变量</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">export ARCH=arm64
+</span></span><span class="line"><span class="cl">export SUBARCH=arm64
+</span></span><span class="line"><span class="cl">export KBUILD_BUILD_HOST=kali
+</span></span><span class="line"><span class="cl">export KBUILD_BUILD_USER=root
+</span></span><span class="line"><span class="cl">export LOCALVERSION=-NetHunter
+</span></span><span class="line"><span class="cl">export PATH=&#34;/root/proton-clang/bin:$PATH&#34;
+</span></span><span class="line"><span class="cl">mkdir out
+</span></span><span class="line"><span class="cl">args=&#34;-j$(nproc --all) \
+</span></span><span class="line"><span class="cl">ARCH=arm64 \
+</span></span><span class="line"><span class="cl">SUBARCH=arm64 \
+</span></span><span class="line"><span class="cl">O=out \
+</span></span><span class="line"><span class="cl">CC=clang \
+</span></span><span class="line"><span class="cl">CROSS_COMPILE=aarch64-linux-gnu- \
+</span></span><span class="line"><span class="cl">CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
+</span></span><span class="line"><span class="cl">CLANG_TRIPLE=aarch64-linux-gnu- \
+</span></span><span class="line"><span class="cl">AR=llvm-ar \
+</span></span><span class="line"><span class="cl">NM=llvm-nm \
+</span></span><span class="line"><span class="cl">OBJCOPY=llvm-objcopy \
+</span></span><span class="line"><span class="cl">OBJDUMP=llvm-objdump \
+</span></span><span class="line"><span class="cl">STRIP=llvm-strip &#34;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="打入补丁" class="headerLink">
+    <a href="#%e6%89%93%e5%85%a5%e8%a1%a5%e4%b8%81" class="header-mark"></a>7.0.9 打入补丁</h4><p>这里根据你的内核版本选择对应内核版本的补丁(patches)<br>
+我这里内核是4.9所以选择4.9内核的补丁</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-kernel.git
+</span></span><span class="line"><span class="cl">patch -p1 &lt; kali-nethunter-kernel/patches/4.09/add-wifi-injection-4.14.patch
+</span></span><span class="line"><span class="cl">patch -p1 &lt; kali-nethunter-kernel/patches/4.09/fix-ath9k-naming-conflict.patch
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="生成defconfig" class="headerLink">
+    <a href="#%e7%94%9f%e6%88%90defconfig" class="header-mark"></a>7.0.10 生成defconfig</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make <span class="si">${</span><span class="nv">args</span><span class="si">}</span> mrproper
+</span></span><span class="line"><span class="cl">make <span class="si">${</span><span class="nv">args</span><span class="si">}</span> santoni_treble_defconfig
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="图形化配置内核选项" class="headerLink">
+    <a href="#%e5%9b%be%e5%bd%a2%e5%8c%96%e9%85%8d%e7%bd%ae%e5%86%85%e6%a0%b8%e9%80%89%e9%a1%b9" class="header-mark"></a>7.0.11 图形化配置内核选项</h4><p>以下内容不同版本内核可能会有所不同，以实际情况为准！</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make <span class="si">${</span><span class="nv">args</span><span class="si">}</span> menuconfig
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/menuconfig.png" title="menuconfig" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/menuconfig.png" data-sub-html="<h2>menuconfig</h2><p>menuconfig</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/menuconfig.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/menuconfig.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/menuconfig.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/menuconfig.png 2x"
+            sizes="auto"
+            alt="menuconfig">
+    </a><figcaption class="image-caption">menuconfig</figcaption>
+    </figure></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">首先进入<span class="s2">&#34;Gerenal Setup&#34;</span>  
+</span></span><span class="line"><span class="cl">选择到<span class="s2">&#34;Local version - append to kernel release&#34;</span>  
+</span></span><span class="line"><span class="cl">清空里面所有内容  
+</span></span><span class="line"><span class="cl">然后取消勾选<span class="s2">&#34;Automatically append version information to the version string&#34;</span>  
+</span></span><span class="line"><span class="cl">接着选中<span class="s2">&#34;Default hostname&#34;</span>，输入<span class="s2">&#34;kali&#34;</span>  
+</span></span><span class="line"><span class="cl">接着勾选<span class="s2">&#34;System V IPC&#34;</span>  
+</span></span><span class="line"><span class="cl">然后返回上一级菜单  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如图所示<br>
+<figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/general.png" title="general" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/general.png" data-sub-html="<h2>general</h2><p>general</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/general.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/general.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/general.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/general.png 2x"
+            sizes="auto"
+            alt="general">
+    </a><figcaption class="image-caption">general</figcaption>
+    </figure></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">接着进入到<span class="s2">&#34;Enable loadable module support&#34;</span>  
+</span></span><span class="line"><span class="cl">勾选以下几个选项:  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;loadable module support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Forced module loading&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Modules unloading&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Forced module unloading&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Module versioning support&#34;</span>  
+</span></span><span class="line"><span class="cl">然后返回上一级菜单
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如图所示<br>
+<figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/module.png" title="module" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/module.png" data-sub-html="<h2>module</h2><p>module</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/module.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/module.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/module.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/module.png 2x"
+            sizes="auto"
+            alt="module">
+    </a><figcaption class="image-caption">module</figcaption>
+    </figure></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">接着进入到<span class="s2">&#34;Networking support&#34;</span> -&gt; <span class="s2">&#34;Bluetooth subsystem support&#34;</span> -&gt; <span class="s2">&#34;Bluetooth drivers support&#34;</span>  
+</span></span><span class="line"><span class="cl">勾选以下几个选项:  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;HCI USB driver&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Broadcom protocol support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Realtek protocol support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;HCI UART driver&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;HCI BCM203x USB driver&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;HCI BPA10x USB driver&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;HCI BlueFRITZ! USB driver&#34;</span>  
+</span></span><span class="line"><span class="cl">然后返回上一级菜单
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如图所示<br>
+<figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_driver.png" title="bluetooth-driver" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_driver.png" data-sub-html="<h2>bluetooth-driver</h2><p>bluetooth-driver</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_driver.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_driver.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_driver.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_driver.png 2x"
+            sizes="auto"
+            alt="bluetooth-driver">
+    </a><figcaption class="image-caption">bluetooth-driver</figcaption>
+    </figure></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">勾选以下几个选项：  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Bluetooth Classic (BR/EDR) features&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;RFCOMM protocol support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;RFCOMM TTY support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;BNEP protocol support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;HIDP protocol support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Bluetooth Low Energy (LE) features&#34;</span>  
+</span></span><span class="line"><span class="cl">然后返回上一级菜单  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如图所示<br>
+<figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_subsystem.png" title="bluetooth" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_subsystem.png" data-sub-html="<h2>bluetooth</h2><p>bluetooth</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_subsystem.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_subsystem.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_subsystem.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_subsystem.png 2x"
+            sizes="auto"
+            alt="bluetooth">
+    </a><figcaption class="image-caption">bluetooth</figcaption>
+    </figure></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">进入到<span class="s2">&#34;Wireless&#34;</span>  勾选以下几个选项：  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;nl80211 testmode command&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;use statically compiled regulatory rules database&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;cfg80211 wireless extensions compatibility&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Generic IEEE 802.11 Networking Stack (mac80211)&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Enable mac80211 mesh networking (pre-802.11s) support&#34;</span>  
+</span></span><span class="line"><span class="cl">然后返回上一级菜单
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如图所示<br>
+<figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless.png" title="wireless" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless.png" data-sub-html="<h2>wireless</h2><p>wireless</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless.png 2x"
+            sizes="auto"
+            alt="wireless">
+    </a><figcaption class="image-caption">wireless</figcaption>
+    </figure></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">接着进入到<span class="s2">&#34;Device Drivers&#34;</span> -&gt; <span class="s2">&#34;Network device support&#34;</span> -&gt; <span class="s2">&#34;USB Network Adapters&#34;</span>  
+</span></span><span class="line"><span class="cl">勾选以下几个选项：  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB RTL8150 based ethernet device support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Realtek RTL8152/RTL8153 Based USB Ethernet Adapters&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;ASIX AX88xxx Based USB 2.0 Ethernet Adapters&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;ASIX AX88179/178A USB 3.0/2.0 to Gigabit Ethernet&#34;</span>. 
+</span></span><span class="line"><span class="cl">然后返回上一级菜单
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如图所示<br>
+<figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_network.png" title="usb_net" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_network.png" data-sub-html="<h2>usb_net</h2><p>usb_net</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_network.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_network.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_network.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_network.png 2x"
+            sizes="auto"
+            alt="usb_net">
+    </a><figcaption class="image-caption">usb_net</figcaption>
+    </figure></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">接着进入到<span class="s2">&#34;Wireless LAN&#34;</span>  
+</span></span><span class="line"><span class="cl">勾选以下几个选项：  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Atheros/Qualcomm devices&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Atheros HTC based wireless cards support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Linux Community AR9170 802.11n USB support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Atheros mobile chipsets support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Atheros ath6kl USB support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;MediaTek devices&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;MediaTek MT7601U (USB) support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Ralink devices&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Ralink driver support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Realtek devices&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Realtek 8187 and 8187B USB support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Realtek rtlwifi family of devices&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;RTL8723AU/RTL8188[CR]U/RTL819[12]CU (mac80211) support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Include support for untested Realtek 8xxx USB devices (EXPERIMENTAL)&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;ZyDAS devices&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB ZD1201 based Wireless device support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;ZyDAS ZD1211/ZD1211B USB-wireless support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Wireless RNDIS USB support&#34;</span>  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">在<span class="s2">&#34;Ralink driver support&#34;</span>中勾选以下几个选项：  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Ralink rt2500 (USB) support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Ralink rt2501/rt73 (USB) support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Ralink rt27xx/rt28xx/rt30xx (USB) support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;rt2800usb - Include support for rt33xx devices&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;rt2800usb - Include support for rt35xx devices (EXPERIMENTAL)&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;rt2800usb - Include support for rt3573 devices (EXPERIMENTAL)&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;rt2800usb - Include support for rt53xx devices (EXPERIMENTAL)&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;rt2800usb - Include support for rt55xx devices (EXPERIMENTAL)&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;rt2800usb - Include support for unknown (USB) devices&#34;</span>  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">在<span class="s2">&#34;Realtek rtlwifi family of devices&#34;</span> 中勾选
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Realtek RTL8192CU/RTL8188CU USB Wireless Network Adapter&#34;</span>  
+</span></span><span class="line"><span class="cl">然后返回主菜单
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如图所示<br>
+<figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless_lan.png" title="Atheros" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless_lan.png" data-sub-html="<h2>Atheros</h2><p>Atheros</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless_lan.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless_lan.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless_lan.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless_lan.png 2x"
+            sizes="auto"
+            alt="Atheros">
+    </a><figcaption class="image-caption">Atheros</figcaption>
+    </figure></p>
+<p><figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/mediatek.png" title="MediaTek" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/mediatek.png" data-sub-html="<h2>MediaTek</h2><p>MediaTek</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/mediatek.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/mediatek.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/mediatek.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/mediatek.png 2x"
+            sizes="auto"
+            alt="MediaTek">
+    </a><figcaption class="image-caption">MediaTek</figcaption>
+    </figure></p>
+<p><figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/ralink.png" title="Ralink" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/ralink.png" data-sub-html="<h2>Ralink</h2><p>Ralink</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/ralink.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/ralink.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/ralink.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/ralink.png 2x"
+            sizes="auto"
+            alt="Ralink">
+    </a><figcaption class="image-caption">Ralink</figcaption>
+    </figure></p>
+<p><figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/realtek.png" title="Realtek" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/realtek.png" data-sub-html="<h2>Realtek</h2><p>Realtek</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/realtek.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/realtek.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/realtek.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/realtek.png 2x"
+            sizes="auto"
+            alt="Realtek">
+    </a><figcaption class="image-caption">Realtek</figcaption>
+    </figure></p>
+<p><figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/zydas.png" title="ZyDAS" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/zydas.png" data-sub-html="<h2>ZyDAS</h2><p>ZyDAS</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/zydas.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/zydas.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/zydas.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/zydas.png 2x"
+            sizes="auto"
+            alt="ZyDAS">
+    </a><figcaption class="image-caption">ZyDAS</figcaption>
+    </figure></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">进入到<span class="s2">&#34;Device Drivers&#34;</span> -&gt; <span class="s2">&#34;Multimedia support&#34;</span> 勾选：  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Digital TV support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Software defined radio support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Media USB Adapters&#34;</span>  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">在<span class="s2">&#34;Media USB Adapters&#34;</span>中 勾选：  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Airspy&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;HackRF&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Mirics MSi 2500&#34;</span>  
+</span></span><span class="line"><span class="cl">然后拉到最下面，取消勾选  <span class="s2">&#34;Autoselect ancillary drivers (tuners, sensors, i2c, spi, frontends)&#34;</span>  
+</span></span><span class="line"><span class="cl">取消勾选 <span class="s2">&#34;I2C Encoders, decoders, sensors and other helper chips&#34;</span> 内所有选项  
+</span></span><span class="line"><span class="cl">取消勾选 <span class="s2">&#34;Customize TV tuners&#34;</span> 内除了 <span class="s2">&#34;Rafael Micro R820T silicon tuner&#34;</span> 以外所有选项  
+</span></span><span class="line"><span class="cl">在 <span class="s2">&#34;Customise DVB Frontends&#34;</span> 内取消勾选除了：  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Realtek RTL2830 DVB-T&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Realtek RTL2832 DVB-T&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Realtek RTL2832 SDR&#34;</span>  
+</span></span><span class="line"><span class="cl">以外所有的选项  
+</span></span><span class="line"><span class="cl">然后返回主菜单
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如图所示<br>
+<figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/multimedia.png" title="Multimedia_support" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/multimedia.png" data-sub-html="<h2>Multimedia_support</h2><p>Multimedia_support</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/multimedia.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/multimedia.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/multimedia.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/multimedia.png 2x"
+            sizes="auto"
+            alt="Multimedia_support">
+    </a><figcaption class="image-caption">Multimedia_support</figcaption>
+    </figure></p>
+<p><figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/media_usb.png" title="Media_usb" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/media_usb.png" data-sub-html="<h2>Media_usb</h2><p>Media_usb</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/media_usb.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/media_usb.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/media_usb.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/media_usb.png 2x"
+            sizes="auto"
+            alt="Media_usb">
+    </a><figcaption class="image-caption">Media_usb</figcaption>
+    </figure></p>
+<p><figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/unselect.png" title="unselect" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/unselect.png" data-sub-html="<h2>unselect</h2><p>unselect</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/unselect.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/unselect.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/unselect.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/unselect.png 2x"
+            sizes="auto"
+            alt="unselect">
+    </a><figcaption class="image-caption">unselect</figcaption>
+    </figure></p>
+<p><figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_encoder.png" title="I2C_EN" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_encoder.png" data-sub-html="<h2>I2C_EN</h2><p>I2C_EN</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_encoder.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_encoder.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_encoder.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_encoder.png 2x"
+            sizes="auto"
+            alt="I2C_EN">
+    </a><figcaption class="image-caption">I2C_EN</figcaption>
+    </figure></p>
+<p><figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_tv.png" title="Custom_TV" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_tv.png" data-sub-html="<h2>Custom_TV</h2><p>Custom_TV</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_tv.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_tv.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_tv.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_tv.png 2x"
+            sizes="auto"
+            alt="Custom_TV">
+    </a><figcaption class="image-caption">Custom_TV</figcaption>
+    </figure><br>
+<figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_dvb.png" title="Custom_DVB" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_dvb.png" data-sub-html="<h2>Custom_DVB</h2><p>Custom_DVB</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_dvb.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_dvb.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_dvb.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_dvb.png 2x"
+            sizes="auto"
+            alt="Custom_DVB">
+    </a><figcaption class="image-caption">Custom_DVB</figcaption>
+    </figure></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">进入到<span class="s2">&#34;Device Drivers&#34;</span> -&gt; <span class="s2">&#34;HID support&#34;</span> 勾选：  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Battery level reporting for HID devices&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;/dev/hidraw raw HID device support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;User-space I/O driver support for HID subsystem&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Generic HID driver&#34;</span>  
+</span></span><span class="line"><span class="cl">勾选<span class="s2">&#34;Special HID drivers&#34;</span>  <span class="s2">&#34;USB HID support&#34;</span>  <span class="s2">&#34;HID over I2C transport layer&#34;</span>  内所有选项
+</span></span><span class="line"><span class="cl">然后返回上一级菜单
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如图所示
+<figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/hid_support.png" title="HID_support" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/hid_support.png" data-sub-html="<h2>HID_support</h2><p>HID_support</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/hid_support.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/hid_support.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/hid_support.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/hid_support.png 2x"
+            sizes="auto"
+            alt="HID_support">
+    </a><figcaption class="image-caption">HID_support</figcaption>
+    </figure><br>
+<figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/special_hid.png" title="Special_HID" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/special_hid.png" data-sub-html="<h2>Special_HID</h2><p>Special_HID</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/special_hid.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/special_hid.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/special_hid.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/special_hid.png 2x"
+            sizes="auto"
+            alt="Special_HID">
+    </a><figcaption class="image-caption">Special_HID</figcaption>
+    </figure><br>
+<figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_hid.png" title="USB_HID" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_hid.png" data-sub-html="<h2>USB_HID</h2><p>USB_HID</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_hid.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_hid.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_hid.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_hid.png 2x"
+            sizes="auto"
+            alt="USB_HID">
+    </a><figcaption class="image-caption">USB_HID</figcaption>
+    </figure></p>
+<p><figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_hid.png" title="I2C_HID" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_hid.png" data-sub-html="<h2>I2C_HID</h2><p>I2C_HID</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_hid.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_hid.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_hid.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_hid.png 2x"
+            sizes="auto"
+            alt="I2C_HID">
+    </a><figcaption class="image-caption">I2C_HID</figcaption>
+    </figure></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">接着进入到<span class="s2">&#34;Device Drivers&#34;</span> -&gt; <span class="s2">&#34;USB support&#34;</span>  勾选：  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Support for Host-side USB&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;OTG support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB Modem (CDC ACM) support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB Wireless Device Management support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB Mass Storage support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB Serial Converter support&#34;</span>  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">在<span class="s2">&#34;USB Serial Converter support&#34;</span> 中勾选：  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB Serial Console device support&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB Generic Serial Drive&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB Serial Simple Drive&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB Winchiphead CH341 Single Port Serial Driver&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB CP210x family of UART Bridge Controllers&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB FTDI Single Port Serial Driver&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB Prolific 2303 Single Port Serial Driver&#34;</span>  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">在<span class="s2">&#34;USB Gadget Support&#34;</span>中勾选：  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB functions configurable through configfs&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Generic serial bulk in/out&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Abstract Control Model (CDC ACM)&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Object Exchange Model (CDC OBEX)&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Network Control Model (CDC NCM)&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Ethernet Control Model (CDC ECM)&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Ethernet Control Model (CDC ECM) subset&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;QCRNDIS&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;RNDIS&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;RMNET_BAM&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Ethernet Emulation Model (EEM)&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Mass storage&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Function filesystem (FunctionFS)&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;MTP gadget&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;PTP gadget&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Accessory gadget&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Audio Source gadget&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;Uevent notification of Gadget state&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;MIDI function&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;HID function&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB Diag function&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB Serial Character function&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB CCID function&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;USB QDSS function&#34;</span>  
+</span></span><span class="line"><span class="cl">接着返回主菜单，退出并保存配置
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如图所示
+<figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_support.png" title="USB_support" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_support.png" data-sub-html="<h2>USB_support</h2><p>USB_support</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_support.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_support.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_support.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_support.png 2x"
+            sizes="auto"
+            alt="USB_support">
+    </a><figcaption class="image-caption">USB_support</figcaption>
+    </figure></p>
+<p><figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_serial.png" title="USB_Serial" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_serial.png" data-sub-html="<h2>USB_Serial</h2><p>USB_Serial</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_serial.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_serial.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_serial.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_serial.png 2x"
+            sizes="auto"
+            alt="USB_Serial">
+    </a><figcaption class="image-caption">USB_Serial</figcaption>
+    </figure></p>
+<p><figure><a class="lightgallery" href="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_gadget.png" title="USB_Gadget" data-thumbnail="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_gadget.png" data-sub-html="<h2>USB_Gadget</h2><p>USB_Gadget</p>">
+        <img
+            
+            loading="lazy"
+            src="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_gadget.png"
+            srcset="https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_gadget.png, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_gadget.png 1.5x, https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_gadget.png 2x"
+            sizes="auto"
+            alt="USB_Gadget">
+    </a><figcaption class="image-caption">USB_Gadget</figcaption>
+    </figure></p>
+<h4 id="保存配置" class="headerLink">
+    <a href="#%e4%bf%9d%e5%ad%98%e9%85%8d%e7%bd%ae" class="header-mark"></a>7.0.12 保存配置</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make <span class="si">${</span><span class="nv">args</span><span class="si">}</span> savedefconfig
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="编译内核" class="headerLink">
+    <a href="#%e7%bc%96%e8%af%91%e5%86%85%e6%a0%b8" class="header-mark"></a>7.0.13 编译内核</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make <span class="si">${</span><span class="nv">args</span><span class="si">}</span> 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="p">|</span> tee kernel.log
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="编译内核模块" class="headerLink">
+    <a href="#%e7%bc%96%e8%af%91%e5%86%85%e6%a0%b8%e6%a8%a1%e5%9d%97" class="header-mark"></a>7.0.14 编译内核模块</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make <span class="si">${</span><span class="nv">args</span><span class="si">}</span> <span class="nv">INSTALL_MOD_PATH</span><span class="o">=</span><span class="s2">&#34;.&#34;</span> <span class="nv">INSTALL_MOD_STRIP</span><span class="o">=</span><span class="m">1</span> modules_install
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="0x07-构建nethunter-kernel-installer内核包" class="headerLink">
+    <a href="#0x07-%e6%9e%84%e5%bb%banethunter-kernel-installer%e5%86%85%e6%a0%b8%e5%8c%85" class="header-mark"></a>8 0x07 构建NetHunter-Kernel-Installer内核包</h2><h4 id="下载kali官方构建脚本" class="headerLink">
+    <a href="#%e4%b8%8b%e8%bd%bdkali%e5%ae%98%e6%96%b9%e6%9e%84%e5%bb%ba%e8%84%9a%e6%9c%ac" class="header-mark"></a>8.0.15 下载Kali官方构建脚本</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-project /root/kali-nethunter-project --depth<span class="o">=</span><span class="m">1</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="编辑机型列表" class="headerLink">
+    <a href="#%e7%bc%96%e8%be%91%e6%9c%ba%e5%9e%8b%e5%88%97%e8%a1%a8" class="header-mark"></a>8.0.16 编辑机型列表</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir -p /root/kali-nethunter-project/nethunter-installer/devices/  
+</span></span><span class="line"><span class="cl">touch /root/kali-nethunter-project/nethunter-installer/devices/devices.cfg  
+</span></span><span class="line"><span class="cl">vim /root/kali-nethunter-project/nethunter-installer/devices/devices.cfg  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>按照<a href="https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-devices#how-to-add-a-newunsupported-device" target="_blank" rel="noopener noreferrer">官方教程</a>，添加以下内容并保存</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Xiaomi Redmi4X for crDroid Android 11  </span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>santoni<span class="o">]</span>  
+</span></span><span class="line"><span class="cl"><span class="nv">author</span> <span class="o">=</span> <span class="s2">&#34;DroidKali&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="nv">arch</span> <span class="o">=</span> arm64  
+</span></span><span class="line"><span class="cl"><span class="nv">version</span> <span class="o">=</span> <span class="s2">&#34;v1.0&#34;</span>  
+</span></span><span class="line"><span class="cl"><span class="nv">flasher</span> <span class="o">=</span> anykernel  
+</span></span><span class="line"><span class="cl"><span class="nv">modules</span> <span class="o">=</span> <span class="m">1</span>  
+</span></span><span class="line"><span class="cl"><span class="nv">slot_device</span> <span class="o">=</span> <span class="m">0</span>  
+</span></span><span class="line"><span class="cl"><span class="nv">block</span> <span class="o">=</span> /dev/block/bootdevice/by-name/boot  
+</span></span><span class="line"><span class="cl"><span class="nv">devicenames</span> <span class="o">=</span> santoni,Redmi4x  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="创建机型对应的文件夹" class="headerLink">
+    <a href="#%e5%88%9b%e5%bb%ba%e6%9c%ba%e5%9e%8b%e5%af%b9%e5%ba%94%e7%9a%84%e6%96%87%e4%bb%b6%e5%a4%b9" class="header-mark"></a>8.0.17 创建机型对应的文件夹</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir -p /root/kali-nethunter-project/nethunter-installer/devices/eleven/santoni/modules/system/lib/modules  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="复制所需要的文件" class="headerLink">
+    <a href="#%e5%a4%8d%e5%88%b6%e6%89%80%e9%9c%80%e8%a6%81%e7%9a%84%e6%96%87%e4%bb%b6" class="header-mark"></a>8.0.18 复制所需要的文件</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cp out/arch/arm64/boot/Image.gz-dtb /root/kali-nethunter-project/nethunter-installer/devices/eleven/santoni  
+</span></span><span class="line"><span class="cl">rm -rf out/lib/modules/<span class="si">${</span><span class="nv">make</span><span class="p"> kernelversion</span><span class="si">}</span>-NetHunter/source  
+</span></span><span class="line"><span class="cl">rm -rf out/lib/modules/<span class="si">${</span><span class="nv">make</span><span class="p"> kernelversion</span><span class="si">}</span>-NetHunter/build  
+</span></span><span class="line"><span class="cl">cp -r out/lib/modules/<span class="si">${</span><span class="nv">make</span><span class="p"> kernelversion</span><span class="si">}</span>-NetHunter /root/kali-nethunter-project/nethunter-installer/devices/eleven/santoni/modules/system/lib/modules/  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="生成nethunter-kernnel-installer安装包" class="headerLink">
+    <a href="#%e7%94%9f%e6%88%90nethunter-kernnel-installer%e5%ae%89%e8%a3%85%e5%8c%85" class="header-mark"></a>8.0.19 生成NetHunter-Kernnel-Installer安装包</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> /root/kali-nethunter-project/nethunter-installer/  
+</span></span><span class="line"><span class="cl">python3 build.py -d santoni --eleven --kernel
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="0x08-下载adb-fastboot工具包" class="headerLink">
+    <a href="#0x08-%e4%b8%8b%e8%bd%bdadb-fastboot%e5%b7%a5%e5%85%b7%e5%8c%85" class="header-mark"></a>9 0x08 下载ADB-FASTBOOT工具包</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://dl.google.com/android/repository/platform-tools-latest-linux.zip
+</span></span><span class="line"><span class="cl">unzip paltform-tools-latest-linux.zip -d /usr/share/
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;&#39;&#39;export PATH=&#34;/usr/share/platform-tools:$PATH&#34;&#39;&#39;&#39;</span> &gt; /root/.zshrc
+</span></span><span class="line"><span class="cl"><span class="nb">source</span> /root/.zshrc
+</span></span><span class="line"><span class="cl">rm -rf platform-tools-latest-linux.zip
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="0x09-刷入内核安装包" class="headerLink">
+    <a href="#0x09-%e5%88%b7%e5%85%a5%e5%86%85%e6%a0%b8%e5%ae%89%e8%a3%85%e5%8c%85" class="header-mark"></a>10 0x09 刷入内核安装包</h2><h4 id="重启到recovery模式" class="headerLink">
+    <a href="#%e9%87%8d%e5%90%af%e5%88%b0recovery%e6%a8%a1%e5%bc%8f" class="header-mark"></a>10.0.20 重启到Recovery模式</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">adb reboot recovery
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="刷入内核刷机包" class="headerLink">
+    <a href="#%e5%88%b7%e5%85%a5%e5%86%85%e6%a0%b8%e5%88%b7%e6%9c%ba%e5%8c%85" class="header-mark"></a>10.0.21 刷入内核刷机包</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">adb sideload kernel-nethunter-eleven-santoni-20210905_111235.zip
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="0x10-相关链接" class="headerLink">
+    <a href="#0x10-%e7%9b%b8%e5%85%b3%e9%93%be%e6%8e%a5" class="header-mark"></a>11 0x10 相关链接</h2><p><a href="https://www.kali.org/docs/nethunter/" target="_blank" rel="noopener noreferrer">Kali NetHunter | Kali Linux Documentation</a></p>
+<p><a href="https://gitlab.com/kalilinux/nethunter/" target="_blank" rel="noopener noreferrer">NetHunter gitlab repository</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/24946336" target="_blank" rel="noopener noreferrer">&ldquo;黑客手机&quot;免费送-知乎专栏</a></p>
+<p><a href="https://www.vuln.cn/7086" target="_blank" rel="noopener noreferrer">跟我把Kali NetHunter编译至任意手机</a></p>
+<p><a href="https://forums.kali.org/showthread.php?44899-Building-a-kernel-for-the-Razor-Phone-2-Live-feed" target="_blank" rel="noopener noreferrer">Building a Kernel for the Razor Phone 2 - Live feed</a></p>
+<p><a href="https://github.com/nathanchance/android-kernel-clang" target="_blank" rel="noopener noreferrer">Information on Compiling Android Kernels with Clang</a></p>
+<p><a href="https://www.akr-developers.com/d/129" target="_blank" rel="noopener noreferrer">[内核向] - 交叉编译器的选择</a></p></div>
+
+        <div class="sponsor">
+        <div class="sponsor-avatar"><img
+        
+        loading="lazy"
+        src="/images/head.jpg"
+        srcset="/images/head.jpg, /images/head.jpg 1.5x, /images/head.jpg 2x"
+        sizes="auto"
+        alt="/images/head.jpg"
+        title="/images/head.jpg" height="960"   width="960" ></div><p class="sponsor-bio"><em>如果你觉得这篇文章对你有所帮助，欢迎赞赏~</em></p><a href="images/wechatpay.png" title="Sponsor" target="_blank" class="sponsor-button" rel="noopener noreferrer">
+                <i class="far fa-heart fa-fw icon" style="color: #ec6cb9;"></i>
+                <span>赞赏</span>
+            </a></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-09-12</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share"><button title="分享到 Twitter" data-sharer="twitter" data-url="https://droidkali.github.io/2021/09/12/build-nethunter-kernel.html/" data-title="Kali Linux NetHunter内核编译指南" data-hashtags="NetHunter,Android,Kernel,内核编译"><span class="fab fa-twitter fa-fw"></span></button><button title="分享到 微博" data-sharer="weibo" data-url="https://droidkali.github.io/2021/09/12/build-nethunter-kernel.html/" data-title="Kali Linux NetHunter内核编译指南"><span class="fab fa-weibo fa-fw"></span></button></div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/nethunter/">NetHunter</a>,&nbsp;<a href="/tags/android/">Android</a>,&nbsp;<a href="/tags/kernel/">Kernel</a>,&nbsp;<a href="/tags/%E5%86%85%E6%A0%B8%E7%BC%96%E8%AF%91/">内核编译</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/2019/05/07/gsm-sniffing.html/" class="prev" rel="prev" title="浅谈 GSM 网络的安全性 实战截取用户身份信息"><i class="fas fa-angle-left fa-fw"></i>浅谈 GSM 网络的安全性 实战截取用户身份信息</a>
+            <a href="/2021/12/30/log4j2-rce.html/" class="next" rel="next" title="Log4j2 RCE漏洞复现">Log4j2 RCE漏洞复现<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">
+                    由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" title="Hugo 0.118.2">Hugo</a> 强力驱动&nbsp;|&nbsp;托管在 <a title="Github Pages" href="https://docs.github.com/en/pages/" target="_blank" rel="noopener noreffer">GitHub Pages</a> 上&nbsp;|&nbsp;主题 - <a href="https://github.com/HEIGE-PCloud/DoIt" target="_blank" rel="noopener noreferrer" title="DoIt 0.4.0"><i class="far fa-edit fa-fw"></i> DoIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2018 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://github.com/DroidKali" target="_blank" rel="noopener noreferrer">记忆里的纯真</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="回到顶部">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><link rel="stylesheet" href="/lib/valine/valine.min.css"><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{"valine":{"appId":"K5FC5aI93BvFb3t5kKm44j64-gzGzoHsz","appKey":"y2RuCD7Vc7INR3evErdQ3huY","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":true,"highlight":true,"lang":"zh-cn","pageSize":10,"placeholder":"随便说点什么叭~","recordIP":false,"visitor":true}},"data":{"desktop-header-typeit":"纯真's Blog","mobile-header-typeit":"纯真's Blog"},"search":{"algoliaAppID":"5YGRNRQK1G","algoliaIndex":"zh_cn_index","algoliaSearchKey":"0ff6874805de24b84aa1d5ebccad56cd","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"},"sharerjs":true,"table":{"sort":true},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/tablesort@5.3.0/src/tablesort.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/sharer.js@0.4.2/sharer.min.js"></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js"></script><script type="text/javascript" src="/js/theme.min.js" defer></script><script type="text/javascript" src="https://fastly.jsdelivr.net/npm/valine@1.5.1/dist/Valine.min.js" defer></script><script type="text/javascript" src="/js/valine.min.js" defer></script></div>
+</body>
+
+</html>

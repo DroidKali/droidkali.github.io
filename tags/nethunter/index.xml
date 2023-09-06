@@ -1,1 +1,20 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>NetHunter - 标签 - 纯真's Blog</title><link>https://droidkali.github.io/hugo-blog/tags/nethunter/</link><description>NetHunter - 标签 - 纯真's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>droidkali@qq.com (记忆里的纯真)</managingEditor><webMaster>droidkali@qq.com (记忆里的纯真)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 12 Sep 2021 22:35:39 +0000</lastBuildDate><atom:link href="https://droidkali.github.io/hugo-blog/tags/nethunter/" rel="self" type="application/rss+xml"/><item><title>Kali Linux NetHunter内核编译指南</title><link>https://droidkali.github.io/hugo-blog/2021/09/12/build-nethunter-kernel.html/</link><pubDate>Sun, 12 Sep 2021 22:35:39 +0000</pubDate><author><name>记忆里的纯真</name><uri>https://droidkali.github.io</uri></author><guid>https://droidkali.github.io/hugo-blog/2021/09/12/build-nethunter-kernel.html/</guid><description>本文主要介绍Kali Linux NetHunter内核的编译适配过程。</description></item><item><title>NetHunter安装不完全指北</title><link>https://droidkali.github.io/hugo-blog/2019/02/21/nethunter-install-guide.html/</link><pubDate>Thu, 21 Feb 2019 16:06:30 +0000</pubDate><author><name>记忆里的纯真</name><uri>https://droidkali.github.io</uri></author><guid>https://droidkali.github.io/hugo-blog/2019/02/21/nethunter-install-guide.html/</guid><description>本文主要介绍了Kali Linux NetHunter的安装过程。</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>NetHunter - 标签 - 纯真&#39;s Blog</title>
+        <link>https://droidkali.github.io/tags/nethunter/</link>
+        <description>NetHunter - 标签 - 纯真&#39;s Blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>droidkali@qq.com (记忆里的纯真)</managingEditor>
+            <webMaster>droidkali@qq.com (记忆里的纯真)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 12 Sep 2021 22:35:39 &#43;0000</lastBuildDate><atom:link href="https://droidkali.github.io/tags/nethunter/" rel="self" type="application/rss+xml" /><item>
+    <title>Kali Linux NetHunter内核编译指南</title>
+    <link>https://droidkali.github.io/2021/09/12/build-nethunter-kernel.html/</link>
+    <pubDate>Sun, 12 Sep 2021 22:35:39 &#43;0000</pubDate><author>
+                        <name>记忆里的纯真</name><uri>https://droidkali.github.io</uri></author><guid>https://droidkali.github.io/2021/09/12/build-nethunter-kernel.html/</guid>
+    <description><![CDATA[本文主要介绍Kali Linux NetHunter内核的编译适配过程。]]></description>
+</item><item>
+    <title>NetHunter安装不完全指北</title>
+    <link>https://droidkali.github.io/2019/02/21/nethunter-install-guide.html/</link>
+    <pubDate>Thu, 21 Feb 2019 16:06:30 &#43;0000</pubDate><author>
+                        <name>记忆里的纯真</name><uri>https://droidkali.github.io</uri></author><guid>https://droidkali.github.io/2019/02/21/nethunter-install-guide.html/</guid>
+    <description><![CDATA[本文主要介绍了Kali Linux NetHunter的安装过程。]]></description>
+</item></channel>
+</rss>
