@@ -58,4 +58,4 @@ Disallow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://droidkali.github.io/sitemap.xml
+Sitemap: https://hugodoit.pages.dev/sitemap.xml
