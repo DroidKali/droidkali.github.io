@@ -1,8 +1,1 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>配置 - 标签 - 纯真&#39;s Blog</title>
-        <link>https://droidkali.github.io/tags/configuration/</link>
-        <description>配置 - 标签 - 纯真&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>droidkali@qq.com (记忆里的纯真)</managingEditor>
-            <webMaster>droidkali@qq.com (记忆里的纯真)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><atom:link href="https://droidkali.github.io/tags/configuration/" rel="self" type="application/rss+xml" /></channel>
-</rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>配置 - 标签 - 纯真's Blog</title><link>https://droidkali.github.io/tags/configuration/</link><description>配置 - 标签 - 纯真's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>droidkali@qq.com (记忆里的纯真)</managingEditor><webMaster>droidkali@qq.com (记忆里的纯真)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><atom:link href="https://droidkali.github.io/tags/configuration/" rel="self" type="application/rss+xml"/></channel></rss>

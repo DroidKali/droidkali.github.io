@@ -1,16 +1,3 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>deploy - 标签 - 纯真&#39;s Blog</title>
-        <link>https://droidkali.github.io/tags/deploy/</link>
-        <description>deploy - 标签 - 纯真&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>droidkali@qq.com (记忆里的纯真)</managingEditor>
-            <webMaster>droidkali@qq.com (记忆里的纯真)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 05 Dec 2018 18:52:54 &#43;0000</lastBuildDate><atom:link href="https://droidkali.github.io/tags/deploy/" rel="self" type="application/rss+xml" /><item>
-    <title>安卓Chroot环境使用Hashcat</title>
-    <link>https://droidkali.github.io/2018/12/05/android-chroot-hashcat.html/</link>
-    <pubDate>Wed, 05 Dec 2018 18:52:54 &#43;0000</pubDate><author>
-                        <name>记忆里的纯真</name><uri>https://droidkali.github.io</uri></author><guid>https://droidkali.github.io/2018/12/05/android-chroot-hashcat.html/</guid>
-    <description><![CDATA[<h1 id="0x00-环境要求" class="headerLink">
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>deploy - 标签 - 纯真's Blog</title><link>https://droidkali.github.io/tags/deploy/</link><description>deploy - 标签 - 纯真's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>droidkali@qq.com (记忆里的纯真)</managingEditor><webMaster>droidkali@qq.com (记忆里的纯真)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 05 Dec 2018 18:52:54 +0000</lastBuildDate><atom:link href="https://droidkali.github.io/tags/deploy/" rel="self" type="application/rss+xml"/><item><title>安卓Chroot环境使用Hashcat</title><link>https://droidkali.github.io/2018/12/05/android-chroot-hashcat.html/</link><pubDate>Wed, 05 Dec 2018 18:52:54 +0000</pubDate><author><name>记忆里的纯真</name><uri>https://droidkali.github.io</uri></author><guid>https://droidkali.github.io/2018/12/05/android-chroot-hashcat.html/</guid><description><![CDATA[<h1 id="0x00-环境要求" class="headerLink">
     <a href="#0x00-%e7%8e%af%e5%a2%83%e8%a6%81%e6%b1%82" class="header-mark"></a>0x00 环境要求</h1><p>·已安装Chroot Linux的安卓手机一部</p>
-<p>·可靠的的互联网连接</p>]]></description>
-</item></channel>
-</rss>
+<p>·可靠的的互联网连接</p>]]></description></item></channel></rss>
