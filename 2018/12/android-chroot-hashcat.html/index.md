@@ -28,5 +28,5 @@ hashcat -I && hashcat -m 2500 -b
 
 ![test](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/test.png)
 
-感谢群友***@至尊天下*** 提供技术支持！
+感谢群友 ***@至尊天下*** 提供技术支持！
 
