@@ -16,7 +16,9 @@
 ## 3.环境准备
 #### 3.1 下载部署IDA Pro
 https://down.52pojie.cn/Tools/Disassemblers/IDA_Pro_v8.3_Portable.zip
+
 下载后将其解压到任意非中文目录
+
 然后运行 **IDA_Pro_8.3_绿化工具.exe**
 ![](IDA_Pro_8.3_绿化工具.png)
 
@@ -62,6 +64,7 @@ uv run ida-pro-mcp --config
 
 #### 3.8 配置Cursor MCP设置
 如果上一步的命令已经成功的将MCP json文件复制到对应的目录下则不需要进行这一步操作，否则请按照以下的步骤进行：
+
 首先进入到 ida-pro-mcp 的源代码路径
 ```bash
 cd ida-pro-mcp
@@ -97,9 +100,13 @@ uv run ida-pro-mcp --config
 
 ## 4.开始逆向分析
 首先我们按照 [飞牛OS任意文件/目录读取漏洞复现，并学习尝试深入系统文件分析信息处理流程](https://mp.weixin.qq.com/s/er53Zd0xWiuazTBpIITS8Q) 这篇文章作者的思路, 从带有漏洞的飞牛OS里提取想对应的二进制程序
+
 具体路径为 **/usr/trim/bin/trim_app_center**
+
 我这里提取的飞牛OS系统版本为 **v1.0.0**
+
 **trim_app_center** 文件的校验码为
+
 SHA256：
 ```
 79dab1f0bdcf047c3d4be6115076c527e3f96888012eb6978f0e776786c17ce0 trim_app_center
@@ -282,7 +289,7 @@ SHA256：
 *报告基于 IDA Pro 与 user-ida-pro-mcp 对飞牛 NAS app-center 相关二进制的逆向分析整理。*
 ***
 
-## 5.参考链接
+## 6.参考链接
 [国产飞牛系统fnOS疑似出现重大安全漏洞 大量用户数据遭到公开访问](https://www.landiannews.com/archives/111674.html)
 
 [飞牛OS任意文件/目录读取漏洞复现，并学习尝试深入系统文件分析信息处理流程](https://mp.weixin.qq.com/s/er53Zd0xWiuazTBpIITS8Q)
