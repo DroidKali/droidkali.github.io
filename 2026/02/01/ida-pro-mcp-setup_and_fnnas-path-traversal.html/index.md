@@ -7,10 +7,10 @@
 ## 2.逆向环境介绍
 | 工具 | 名称 | 版本 |
 | --- | --- | --- |
-| **系统** | **Windows 10 LTSC 2021 x64** | **21h2** |
-| **逆向分析工具** | **IDA Pro** | **8.3** |
-| **MCP Agent** | **IDA Pro MCP** | **2.0.0** |
-| **AI IDE** | **Cursor** | **2.4.27** |
+| **系统:** | **Windows 10 LTSC 2021 x64** | **21h2** |
+| **逆向分析工具:** | **IDA Pro** | **8.3** |
+| **MCP Agent:** | **IDA Pro MCP** | **2.0.0** |
+| **AI IDE：** | **Cursor** | **2.4.27** |
 | **Python版本管理工具** | **uv** | **0.9.28** |
 
 ## 3.环境准备
@@ -99,7 +99,7 @@ uv run ida-pro-mcp --config
 这样我们就完成了 **Cursor** 的设置.
 
 ## 4.开始逆向分析
-首先我们按照 [飞牛OS任意文件/目录读取漏洞复现，并学习尝试深入系统文件分析信息处理流程](https://mp.weixin.qq.com/s/er53Zd0xWiuazTBpIITS8Q) 这篇文章作者的思路, 从带有漏洞的飞牛OS里提取相对应的二进制程序
+首先我们按照 [飞牛OS任意文件/目录读取漏洞复现，并学习尝试深入系统文件分析信息处理流程](https://mp.weixin.qq.com/s/er53Zd0xWiuazTBpIITS8Q) 这篇文章作者的思路, 从带有漏洞的飞牛OS里提取想对应的二进制程序
 
 具体路径为 **/usr/trim/bin/trim_app_center**
 
@@ -295,4 +295,3 @@ SHA256：
 [飞牛OS任意文件/目录读取漏洞复现，并学习尝试深入系统文件分析信息处理流程](https://mp.weixin.qq.com/s/er53Zd0xWiuazTBpIITS8Q)
 
 [IDA Pro MCP](https://github.com/mrexodia/ida-pro-mcp.git)
-
