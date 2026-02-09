@@ -143,7 +143,7 @@ make ${args} santoni_treble_defconfig
 ```bash
 make ${args} menuconfig
 ```
-![menuconfig](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/menuconfig.png "menuconfig")
+![menuconfig](menuconfig.png "menuconfig")
 ```sh
 首先进入"Gerenal Setup"  
 选择到"Local version - append to kernel release"  
@@ -154,7 +154,7 @@ make ${args} menuconfig
 然后返回上一级菜单  
 ```
 如图所示  
-![general](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/general.png "general")
+![general](general.png "general")
 
 ```sh
 接着进入到"Enable loadable module support"  
@@ -167,7 +167,7 @@ make ${args} menuconfig
 然后返回上一级菜单
 ```
 如图所示  
-![module](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/module.png "module")
+![module](module.png "module")
 
 ```bash
 接着进入到"Networking support" -> "Bluetooth subsystem support" -> "Bluetooth drivers support"  
@@ -182,7 +182,7 @@ make ${args} menuconfig
 然后返回上一级菜单
 ```
 如图所示  
-![bluetooth-driver](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_driver.png "bluetooth-driver")
+![bluetooth-driver](bluetooth_driver.png "bluetooth-driver")
 
 ```bash
 勾选以下几个选项：  
@@ -195,7 +195,7 @@ make ${args} menuconfig
 然后返回上一级菜单  
 ```
 如图所示  
-![bluetooth](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/bluetooth_subsystem.png "bluetooth")
+![bluetooth](bluetooth_subsystem.png "bluetooth")
 
 ```bash
 进入到"Wireless"  勾选以下几个选项：  
@@ -207,7 +207,7 @@ make ${args} menuconfig
 然后返回上一级菜单
 ```
 如图所示  
-![wireless](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless.png "wireless")
+![wireless](wireless.png "wireless")
 
 ```bash
 接着进入到"Device Drivers" -> "Network device support" -> "USB Network Adapters"  
@@ -219,7 +219,7 @@ make ${args} menuconfig
 然后返回上一级菜单
 ```
 如图所示  
-![usb_net](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_network.png "usb_net")
+![usb_net](usb_network.png "usb_net")
 
 ```bash
 接着进入到"Wireless LAN"  
@@ -259,15 +259,15 @@ make ${args} menuconfig
 然后返回主菜单
 ```
 如图所示  
-![Atheros](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/wireless_lan.png "Atheros")  
+![Atheros](wireless_lan.png "Atheros")  
 
-![MediaTek](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/mediatek.png "MediaTek")  
+![MediaTek](mediatek.png "MediaTek")  
 
-![Ralink](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/ralink.png "Ralink")  
+![Ralink](ralink.png "Ralink")  
 
-![Realtek](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/realtek.png "Realtek")  
+![Realtek](realtek.png "Realtek")  
 
-![ZyDAS](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/zydas.png "ZyDAS")
+![ZyDAS](zydas.png "ZyDAS")
 
 ```bash
 进入到"Device Drivers" -> "Multimedia support" 勾选：  
@@ -290,16 +290,16 @@ make ${args} menuconfig
 然后返回主菜单
 ```
 如图所示  
-![Multimedia_support](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/multimedia.png "Multimedia_support")  
+![Multimedia_support](multimedia.png "Multimedia_support")  
 
-![Media_usb](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/media_usb.png "Media_usb")  
+![Media_usb](media_usb.png "Media_usb")  
 
-![unselect](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/unselect.png "unselect")  
+![unselect](unselect.png "unselect")  
 
-![I2C_EN](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_encoder.png "I2C_EN")  
+![I2C_EN](i2c_encoder.png "I2C_EN")  
 
-![Custom_TV](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_tv.png "Custom_TV")  
-![Custom_DVB](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/custom_dvb.png "Custom_DVB")
+![Custom_TV](custom_tv.png "Custom_TV")  
+![Custom_DVB](custom_dvb.png "Custom_DVB")
 
 ```bash
 进入到"Device Drivers" -> "HID support" 勾选：  
@@ -311,11 +311,11 @@ make ${args} menuconfig
 然后返回上一级菜单
 ```
 如图所示
-![HID_support](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/hid_support.png "HID_support")  
-![Special_HID](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/special_hid.png "Special_HID")  
-![USB_HID](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_hid.png "USB_HID")  
+![HID_support](hid_support.png "HID_support")  
+![Special_HID](special_hid.png "Special_HID")  
+![USB_HID](usb_hid.png "USB_HID")  
 
-![I2C_HID](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/i2c_hid.png "I2C_HID")
+![I2C_HID](i2c_hid.png "I2C_HID")
 
 ```bash
 接着进入到"Device Drivers" -> "USB support"  勾选：  
@@ -363,11 +363,11 @@ make ${args} menuconfig
 接着返回主菜单，退出并保存配置
 ```
 如图所示
-![USB_support](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_support.png "USB_support")  
+![USB_support](usb_support.png "USB_support")  
 
-![USB_Serial](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_serial.png "USB_Serial")  
+![USB_Serial](usb_serial.png "USB_Serial")  
 
-![USB_Gadget](https://image-ghfh.oss-cn-beijing.aliyuncs.com/nethunter/usb_gadget.png "USB_Gadget")
+![USB_Gadget](usb_gadget.png "USB_Gadget")
 
 
 #### 保存配置

@@ -29,7 +29,7 @@
 接下来我们开始刷入固件，打开NodeMcu Flasher，点击Config选项卡，选择你的固件，接着点击Advanced选项卡，在Baudrate(波特率)处选择115200，Flash size根据你的板子Flash大小来选择，我这里是ESP-12所以选择4MB，Flash speed选择80MHz，SPI mode选择DIO,最后我们点击Operation选项卡，在COM port处选择你的板子的端口，可以在windows的设备管理那里看到，然后点击Flash(F)按钮，接着就是等待固件烧录完成了。固件烧录完成后NodeMcu Flasher左下角的NODEMCU TEAM图标会变为绿色。
 
 ### 0x04 攻击实战
-接着我们打开手机WiFi设置，能搜索到一个SSID名为***pwned***的WiFi，这个就是我们烧录好固件之后生成的，密码为***deauther***，连接上去。接着我们打开手机浏览器，在地址栏输入***http://192.168.4.1***进入deauther的后台管理界面，如图:![esp8266-scan](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/esp8266-scan.png)由于最新***v2.1.0***版的固件自带了一个开机自动扫描AP的脚本，所以就不需要我们连上后再手动扫描了，当然如果你想得到更准确的结果的话你也可以重新扫描。扫描周围的无线热点后，我们选择一个目标开始攻击，这里我选择的FAST_4E14这个热点，然后选择攻击界面，如图:![esp8266-attack](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/esp8266-attack.png)选择Deauth攻击，接着刷新界面就能看到攻击效果了![esp8266-attacking](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/esp8266-attacking.png)此时被攻击的无线AP上所有已连接的设备会全部掉线直至我们停止攻击。
+接着我们打开手机WiFi设置，能搜索到一个SSID名为***pwned***的WiFi，这个就是我们烧录好固件之后生成的，密码为***deauther***，连接上去。接着我们打开手机浏览器，在地址栏输入***http://192.168.4.1***进入deauther的后台管理界面，如图:![esp8266-scan](esp8266-scan.png)由于最新***v2.1.0***版的固件自带了一个开机自动扫描AP的脚本，所以就不需要我们连上后再手动扫描了，当然如果你想得到更准确的结果的话你也可以重新扫描。扫描周围的无线热点后，我们选择一个目标开始攻击，这里我选择的FAST_4E14这个热点，然后选择攻击界面，如图:![esp8266-attack](esp8266-attack.png)选择Deauth攻击，接着刷新界面就能看到攻击效果了![esp8266-attacking](esp8266-attacking.png)此时被攻击的无线AP上所有已连接的设备会全部掉线直至我们停止攻击。
 
 ### 0x05 安全建议 
 由于WiFi Deauth攻击是802.11协议上的一个缺陷造成的，所以目前并没有什么有效的防御措施，只能等无线联盟更新协议来弥补这个缺憾。个人的话尽量按照以下几点来做吧

