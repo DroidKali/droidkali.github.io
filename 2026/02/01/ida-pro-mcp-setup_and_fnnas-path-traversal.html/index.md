@@ -233,6 +233,39 @@ SHA256：
 → net_http_ServeFile(response, request, path2)
    → 访问 path2 对应路径，返回任意文件内容
 ```
+{{< mermaid >}}graph TD
+   A["请求: GET /app-center-static/serviceicon/myapp/%7B0%7D/?size=../../../../"] --> B["GetStatic 解析"]
+   
+   B --> C1["Params:"]
+   C1 --> C1a["appname: myapp"]
+   C1 --> C1b["filename: {0}"]
+   C1 --> C1c["type: serviceicon"]
+   
+   B --> C2["Query:"]
+   C2 --> C2a["size: ../../../../"]
+   
+   C1b --> D["路径构造"]
+   C2a -.-> D
+   
+   D --> D1["base = Replace('/var/apps/${appname}/...', appname)"]
+   D1 --> D2["path1 = path/filepath.Join(base, filename)"]
+   D2 --> D3["path2 = strings.Replace(path1, '{0}', size)"]
+   
+   D3 --> E["net/http.ServeFile(response, request, path2)"]
+   E --> F["访问 path2 对应路径"]
+   F --> G["返回任意文件内容"]
+   
+   style A fill:#4a90e2,color:#fff,stroke:#333,stroke-width:2px
+   style B fill:#7ed321,color:#fff
+   style C1 fill:#f5a623,color:#fff
+   style C2 fill:#f5a623,color:#fff
+   style D fill:#bd10e0,color:#fff
+   style D3 fill:#d0021b,color:#fff,stroke:#900,stroke-width:3px
+   style E fill:#9013fe,color:#fff
+   style G fill:#d0021b,color:#fff,stroke:#900,stroke-width:3px
+   
+   linkStyle 4 stroke:#d0021b,stroke-width:2px,stroke-dasharray: 5 5
+{{< /mermaid >}}
 
 ---
 
