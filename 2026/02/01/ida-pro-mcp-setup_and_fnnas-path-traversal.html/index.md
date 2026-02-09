@@ -99,7 +99,7 @@ uv run ida-pro-mcp --config
 这样我们就完成了 **Cursor** 的设置.
 
 ## 4.开始逆向分析
-首先我们按照 [飞牛OS任意文件/目录读取漏洞复现，并学习尝试深入系统文件分析信息处理流程](https://mp.weixin.qq.com/s/er53Zd0xWiuazTBpIITS8Q) 这篇文章作者的思路, 从带有漏洞的飞牛OS里提取想对应的二进制程序
+首先我们按照 [飞牛OS任意文件/目录读取漏洞复现，并学习尝试深入系统文件分析信息处理流程](https://mp.weixin.qq.com/s/er53Zd0xWiuazTBpIITS8Q) 这篇文章作者的思路, 从带有漏洞的飞牛OS里提取相对应的二进制程序
 
 具体路径为 **/usr/trim/bin/trim_app_center**
 
