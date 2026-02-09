@@ -36,6 +36,26 @@
                                     ↓
                               路径穿越漏洞
 ```
+{{< mermaid >}}graph TD
+    A[请求] --> B[GetStatic]
+    B --> C[解析参数]
+    C --> D["替换 {0} 为 size 参数值"]
+    D --> E[ServeFile]
+
+    C --> F[未对 size 进行过滤]
+    F --> G["size=../../ 直接拼入路径"]
+    G --> H[路径穿越漏洞]
+    H -.-> E
+    
+    style A fill:#e0e0e0,color:#333
+    style B fill:#4a90e2,color:#fff
+    style C fill:#4a90e2,color:#fff
+    style D fill:#f5a623,color:#fff
+    style E fill:#7ed321,color:#fff
+    style F fill:#d0021b,color:#fff
+    style G fill:#d0021b,color:#fff
+    style H fill:#d0021b,color:#fff,stroke:#900,stroke-width:3px
+{{< /mermaid >}}
 
 **旧版本关键代码逻辑：**
 1. 从 URL 参数获取 `appname`、`filename`、`type`
@@ -289,6 +309,38 @@ GetStatic (0x11542e0)
     │
     └── 返回文件内容
 ```
+{{< mermaid >}}flowchart TD
+  A["GetStatic (0x11542e0)"] --> B["解析路由参数<br/>(appname, filename, type)"]
+  B --> C["解析 Query 参数<br/>(size)"]
+  C --> D["根据 type 分支处理"]
+  
+  D --> E["serviceicon 分支:"]
+  E --> F["构建基础路径:<br/>/var/apps/${appname}/..."]
+  F --> G["拼接 filename<br/>(含 {0} 占位符)"]
+  G --> H["替换 {0} 为 size 参数值"]
+  
+  H -.->|漏洞点!| I["size='../../../'<br/>直接拼入"]
+  I -.-> J["ServeFile(最终路径)"]
+  J -.->|读取任意文件| K["返回文件内容"]
+  
+  H -->|"正常路径"| K
+  
+  style A fill:#636e72,color:#fff
+  style B fill:#74b9ff,color:#fff
+  style C fill:#74b9ff,color:#fff
+  style D fill:#74b9ff,color:#fff
+  style E fill:#a29bfe,color:#fff
+  style F fill:#fd79a8,color:#fff
+  style G fill:#fdcb6e,color:#2d3436
+  style H fill:#e84393,color:#fff,stroke:#d63031,stroke-width:3px
+  style I fill:#d63031,color:#fff,stroke:#ff7675,stroke-width:3px
+  style J fill:#d63031,color:#fff
+  style K fill:#00b894,color:#fff
+  
+  linkStyle 7 stroke:#d63031,stroke-width:3px,stroke-dasharray: 5 5
+  linkStyle 8 stroke:#d63031,stroke-width:3px,stroke-dasharray: 5 5
+  linkStyle 9 stroke:#d63031,stroke-width:3px,stroke-dasharray: 5 5
+{{< /mermaid >}}
 
 #### 新版本（已修复）
 
@@ -331,6 +383,81 @@ GetStatic (0x12dc760)
     │
     └── 返回文件内容
 ```
+{{< mermaid >}}flowchart TD
+    A["GetStatic (0x12dc760)"] --> B["解析路由参数<br/>(appname, filename, type)"]
+    
+    B --> C["【新增】验证 appname:<br/>isSafeSegment(appname)"]
+    C -->|失败| C1["返回 404<br/>记录日志"]
+    C -->|通过| D["解析 Query 参数 (size)"]
+    
+    D --> E["【新增】验证 filename:<br/>strings.TrimLeft(filename, '/0ml')"]
+    E -->|移除前导斜杠<br/>和空字节| F["根据 type 分支处理"]
+    
+    F --> G["icon 分支<br/>(type='icon'):"]
+    F --> H["poster/wizard 分支:"]
+    
+    G --> G1["【新增】白名单检查:<br/>size 必须是 '32'/'64'/'128'/'256'"]
+    G1 -->|失败| G2["使用默认值 '256'"]
+    G1 -->|通过| G3["构建路径:<br/>/var/apps/${appname}/ICON_{size}.PNG"]
+    G2 --> G3
+    
+    G3 --> G4["【新增】validateFileInBase<br/>(base_dir, file_path)"]
+    G4 -->|失败| G5["返回 404"]
+    G4 -->|通过| G6["ServeFile"]
+    
+    H --> H1["【新增】safeJoin<br/>(base_dir, filename)"]
+    H1 -->|失败| H2["返回 404"]
+    H1 -->|通过| H3["【新增】validateFileInBase<br/>(base_dir, file_path)"]
+    H3 -->|失败| H4["返回 404"]
+    H3 -->|通过| H5["ServeFile"]
+    
+    G6 --> I["返回文件内容"]
+    H5 --> I
+    
+    style A fill:#2d3436,color:#fff,stroke:#00b894,stroke-width:3px
+    style B fill:#74b9ff,color:#fff
+    style C fill:#00b894,color:#fff,stroke:#00b894,stroke-width:2px
+    style C1 fill:#d63031,color:#fff
+    style D fill:#74b9ff,color:#fff
+    style E fill:#00b894,color:#fff,stroke:#00b894,stroke-width:2px
+    style F fill:#74b9ff,color:#fff
+    style G fill:#fdcb6e,color:#2d3436
+    style G1 fill:#00b894,color:#fff,stroke:#00b894,stroke-width:2px
+    style G2 fill:#e17055,color:#fff
+    style G3 fill:#fdcb6e,color:#2d3436
+    style G4 fill:#00b894,color:#fff,stroke:#00b894,stroke-width:2px
+    style G5 fill:#d63031,color:#fff
+    style G6 fill:#74b9ff,color:#fff
+    style H fill:#a29bfe,color:#fff
+    style H1 fill:#00b894,color:#fff,stroke:#00b894,stroke-width:2px
+    style H2 fill:#d63031,color:#fff
+    style H3 fill:#00b894,color:#fff,stroke:#00b894,stroke-width:2px
+    style H4 fill:#d63031,color:#fff
+    style H5 fill:#74b9ff,color:#fff
+    style I fill:#00b894,color:#fff,stroke:#00b894,stroke-width:3px
+    
+    linkStyle 0 stroke:#636e72,stroke-width:2px
+    linkStyle 1 stroke:#636e72,stroke-width:2px
+    linkStyle 2 stroke:#d63031,stroke-width:2px
+    linkStyle 3 stroke:#00b894,stroke-width:3px
+    linkStyle 4 stroke:#636e72,stroke-width:2px
+    linkStyle 5 stroke:#00b894,stroke-width:3px
+    linkStyle 6 stroke:#636e72,stroke-width:2px
+    linkStyle 7 stroke:#fdcb6e,stroke-width:2px
+    linkStyle 8 stroke:#a29bfe,stroke-width:2px
+    linkStyle 9 stroke:#00b894,stroke-width:3px
+    linkStyle 10 stroke:#e17055,stroke-width:2px
+    linkStyle 11 stroke:#fdcb6e,stroke-width:2px
+    linkStyle 12 stroke:#00b894,stroke-width:3px
+    linkStyle 13 stroke:#d63031,stroke-width:2px
+    linkStyle 14 stroke:#74b9ff,stroke-width:2px
+    linkStyle 15 stroke:#00b894,stroke-width:3px
+    linkStyle 16 stroke:#00b894,stroke-width:3px
+    linkStyle 17 stroke:#d63031,stroke-width:2px
+    linkStyle 18 stroke:#74b9ff,stroke-width:2px
+    linkStyle 19 stroke:#00b894,stroke-width:3px
+    linkStyle 20 stroke:#00b894,stroke-width:3px
+{{< /mermaid >}}
 
 ---
 
@@ -415,6 +542,38 @@ GetStatic (0x12dc760)
            字符检查      路径规范化    符号链接解析    Magic Number
            长度限制      基目录检查    真实路径验证    MIME 白名单
 ```
+{{< mermaid >}}flowchart TD
+   A[攻击尝试] --> B[输入验证层]
+   B --> C[路径处理层]
+   C --> D[文件访问层]
+   D --> E[文件类型层]
+   
+   B --> B1[isSafeSegment]
+   B1 --> B2[字符检查]
+   B1 --> B3[长度限制]
+   
+   C --> C1[safeJoin]
+   C1 --> C2[路径规范化]
+   C1 --> C3[基目录检查]
+   
+   D --> D1[validateFileInBase]
+   D1 --> D2[符号链接解析]
+   D1 --> D3[真实路径验证]
+   
+   E --> E1[validateImageFile]
+   E1 --> E2[Magic Number]
+   E1 --> E3[MIME 白名单]
+   
+   style A fill:#ff6b6b,color:#fff
+   style B fill:#4ecdc4,color:#fff
+   style C fill:#45b7d1,color:#fff
+   style D fill:#96ceb4,color:#fff
+   style E fill:#feca57,color:#333
+   style B1 fill:#4ecdc4,color:#fff
+   style C1 fill:#45b7d1,color:#fff
+   style D1 fill:#96ceb4,color:#fff
+   style E1 fill:#feca57,color:#333
+{{< /mermaid >}}
 
 ### 6.2 安全默认值
 
